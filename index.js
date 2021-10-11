@@ -17,8 +17,9 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.use(cors());
 
-app.get("/example", (req, res) => {
-  res.send("Done");
-});
+// Routes
+const apiRoute = require("./routes/api.route");
+
+app.use("/api", apiRoute);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
