@@ -11,19 +11,24 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
 
-  phoneNumber: {
+  fullName: {
     type: String,
     required: true,
+  },
+
+  phoneNumber: {
+    type: String,
+    // required: true,
   },
 
   address: {
     type: String,
-    required: true,
+    // required: true,
   },
 
   birthday: {
     type: Date,
-    required: true,
+    // required: true,
   },
 
   avatar: {
@@ -33,7 +38,7 @@ const UserSchema = new mongoose.Schema({
 
   gender: {
     type: Boolean,
-    required: true,
+    // required: true,
   },
 
   email: {
