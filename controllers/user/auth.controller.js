@@ -53,11 +53,12 @@ exports.register = async (req, res, next) => {
   const {
     firstName,
     lastName,
+    fullName,
     phoneNumber,
-    address,
-    birthday,
+    // address,
+    // birthday,
     // avatar,
-    gender,
+    // gender,
     email,
     password,
   } = req.body;
@@ -69,7 +70,7 @@ exports.register = async (req, res, next) => {
       throw new Error("Email đã tồn tại");
     } else user = null;
 
-    const dateParts = birthday.split("/");
+    // const dateParts = birthday.split("/");
 
     // Tạo ra salt mã hóa
     const salt = await bcrypt.genSalt(10);
@@ -78,17 +79,18 @@ exports.register = async (req, res, next) => {
     user = await User.create({
       firstName,
       lastName,
+      fullName,
       phoneNumber,
-      address,
-      password: generatedPass,
-      gender: gender === "Nam",
+      // address,
+      password: "abcdef",
+      // gender: gender === "Nam",
       email,
       password,
-      birthday: new Date(
-        parseInt(dateParts[2], 10),
-        parseInt(dateParts[1], 10) - 1,
-        parseInt(dateParts[0], 10)
-      ),
+      // birthday: new Date(
+      //   parseInt(dateParts[2], 10),
+      //   parseInt(dateParts[1], 10) - 1,
+      //   parseInt(dateParts[0], 10)
+      // ),
     });
 
     return Response.success(res, { message: "Tạo tài khoản thành công" });
