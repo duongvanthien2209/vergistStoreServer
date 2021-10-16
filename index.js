@@ -9,6 +9,11 @@ const cors = require("cors");
 // Listen for requests
 const PORT = process.env.PORT || 5000;
 
+const connectDB = require("./config/db");
+
+// Kết nối database
+connectDB();
+
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
