@@ -38,7 +38,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        return Response.success(res, { token });
+        return Response.success(res, { token, user });
       }
     );
 
@@ -85,6 +85,7 @@ exports.register = async (req, res, next) => {
       password: generatedPass,
       // gender: gender === "Nam",
       email,
+      role: "user",
       // birthday: new Date(
       //   parseInt(dateParts[2], 10),
       //   parseInt(dateParts[1], 10) - 1,
