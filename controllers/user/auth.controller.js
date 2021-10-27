@@ -38,7 +38,10 @@ exports.login = async (req, res, next) => {
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        return Response.success(res, { token, user });
+        return Response.success(res, {
+          token,
+          user: { ...user._doc, password: "" },
+        });
       }
     );
 
