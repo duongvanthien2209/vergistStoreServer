@@ -27,4 +27,9 @@ const apiRoute = require("./routes/api.route");
 
 app.use("/api", apiRoute);
 
+// app.get(
+//   "/addCategories",
+//   require("./controllers/user/addDb.controller").addProducts
+// );
+
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

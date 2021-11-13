@@ -6,10 +6,17 @@ const { protect } = require("../middlewares/user/auth");
 
 const handleError = require("../helpers/handleError.helper");
 
-router.use("/auth", require("./user/auth.route"));
+// UnProtected
 
+// Auth
+router.use("/auth", require("./user/auth.route"));
 router.use(handleError);
 
+// Products
+router.use("/products", require("./user/product.route"));
+router.use(handleError);
+
+// Protected
 router.use(protect);
 
 router.get("/", (req, res) => {
