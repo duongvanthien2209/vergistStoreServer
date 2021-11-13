@@ -1,4 +1,5 @@
 const constant = require("../constants/index");
+const remove_Id = require("../utils/remove_Id");
 
 const Category = require("../models/Category");
 const Product = require("../models/Product");
@@ -28,6 +29,8 @@ exports.getAll = async (req, res, next) => {
     let queryObj = {};
 
     if (categoryId) {
+      const category = await Category.findById(categoryId);
+      if (!category) throw new Error("Có lỗi xảy ra");
       queryObj = {
         categoryId,
       };
@@ -47,6 +50,8 @@ exports.getAll = async (req, res, next) => {
       };
     }
 
+    const count = await Product.find({ ...queryObj }).count();
+
     if (_sort && _order)
       products = await Product.find({ ...queryObj })
         .sort({
@@ -59,7 +64,11 @@ exports.getAll = async (req, res, next) => {
         .skip((_page - 1) * _limit)
         .limit(_limit);
 
-    return Response.success(res, { products });
+    return Response.success(res, {
+      // Add propertype id for db
+      products: remove_Id(products),
+      totalProduct: count,
+    });
   } catch (error) {
     return next(error);
   }
@@ -81,6 +90,8 @@ exports.getProduct = async (req, res, next) => {
 };
 
 exports.addProduct = async (req, res, next) => {};
+
+exports.changeProduct = async (req, res, next) => {};
 
 exports.deleteProduct = async (req, res, next) => {
   try {
