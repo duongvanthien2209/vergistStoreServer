@@ -17,6 +17,9 @@ exports.login = async (req, res, next) => {
       throw new Error("Email không tồn tại");
     }
 
+    // Add id
+    user._doc.id = user._id;
+
     // if (!user.isVerified) throw new Error("Tài khoản chưa được xác nhận");
 
     // Result: boolean
