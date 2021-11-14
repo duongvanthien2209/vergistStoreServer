@@ -16,6 +16,10 @@ router.use(handleError);
 router.use("/products", require("./user/product.route"));
 router.use(handleError);
 
+// Categories
+router.use("/Category", require("./user/category.route"));
+router.use(handleError);
+
 // Protected
 router.use(protect);
 
