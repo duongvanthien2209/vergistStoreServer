@@ -5,7 +5,6 @@ const Category = require("../models/Category");
 const Product = require("../models/Product");
 
 const Response = require("../helpers/response.helper");
-const remove_Id = require("../utils/remove_Id");
 const uploadImage = require("../utils/uploadImage");
 
 const {
