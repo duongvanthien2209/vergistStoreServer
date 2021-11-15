@@ -9,6 +9,10 @@ const ProductSchema = new mongoose.Schema({
   // 'new', 'hot', empty
   status: {
     type: Object,
+    default: {
+      new: true,
+      hot: false,
+    },
   },
   des: {
     type: String,
@@ -16,7 +20,7 @@ const ProductSchema = new mongoose.Schema({
   shortDes: {
     type: String,
   },
-  img: {
+  imgs: {
     type: Array,
     default: ["https://picsum.photos/200"],
   },

@@ -164,7 +164,67 @@ exports.addProduct = async (req, res, next) => {
   }
 };
 
-exports.changeProduct = async (req, res, next) => {};
+exports.changeProduct = async (req, res, next) => {
+  try {
+    const {
+      files,
+      params: { productId },
+      body: {
+        categoryId,
+        name,
+        // status,
+        price,
+        // sale,
+        rate,
+        // tagId,
+        shortDes,
+        des,
+      },
+    } = req;
+
+    if (!name || !categoryId || !status || !price || !rate || !shortDes || !des)
+      throw new Error("Có lỗi xảy ra");
+
+    const category = await Category.findById(categoryId);
+
+    if (!category) throw new Error("Có lỗi xảy ra");
+
+    if (files) {
+      let resultUrls = [];
+      for (let file of files) {
+        const result = await uploadImage(file);
+        resultUrls.push(result.url);
+      }
+      await Product.create({
+        categoryId: category._id,
+        name,
+        // status,
+        price: parseInt(price),
+        // sale,
+        rate: parseInt(rate),
+        // tagId,
+        shortDes,
+        des,
+        imgs: resultUrls,
+      });
+    } else
+      await Product.create({
+        categoryId: category._id,
+        name,
+        // status,
+        price: parseInt(price),
+        // sale,
+        rate: parseInt(rate),
+        // tagId,
+        shortDes,
+        des,
+      });
+
+    return Response.success(res, { message: createSuccessMessage });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 exports.deleteProduct = async (req, res, next) => {
   try {
