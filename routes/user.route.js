@@ -6,6 +6,11 @@ const { protect } = require("../middlewares/user/auth");
 
 const handleError = require("../helpers/handleError.helper");
 
+// Controllers
+const {
+  changePriceForProducts,
+} = require("../controllers/user/addDb.controller");
+
 // UnProtected
 
 // Auth
@@ -20,11 +25,10 @@ router.use(handleError);
 router.use("/Category", require("./user/category.route"));
 router.use(handleError);
 
+// Change newPrice to Price for Products
+router.get("/updatePrice", changePriceForProducts);
+
 // Protected
 router.use(protect);
-
-router.get("/", (req, res) => {
-  res.send("User");
-});
 
 module.exports = router;

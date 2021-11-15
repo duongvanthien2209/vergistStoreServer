@@ -4,15 +4,23 @@ const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
-  news: {
-    type: Boolean,
+  // 'new', 'hot', empty
+  status: {
+    type: Object,
+  },
+  des: {
+    type: String,
+  },
+  shortDes: {
+    type: String,
   },
   img: {
     type: Array,
     default: ["https://picsum.photos/200"],
   },
-  newPrice: {
+  price: {
     type: Number,
     required: true,
   },
