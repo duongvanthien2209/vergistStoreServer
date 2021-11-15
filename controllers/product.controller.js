@@ -5,6 +5,17 @@ const Category = require("../models/Category");
 const Product = require("../models/Product");
 
 const Response = require("../helpers/response.helper");
+const remove_Id = require("../utils/remove_Id");
+const uploadImage = require("../utils/uploadImage");
+
+const {
+  response: {
+    createSuccessMessage,
+    updateSuccessMessage,
+    deleteSuccessMessage,
+    failMessage,
+  },
+} = require("../constants");
 
 exports.getAll = async (req, res, next) => {
   let {
@@ -92,7 +103,66 @@ exports.getProduct = async (req, res, next) => {
   }
 };
 
-exports.addProduct = async (req, res, next) => {};
+exports.addProduct = async (req, res, next) => {
+  try {
+    const {
+      files,
+      body: {
+        categoryId,
+        name,
+        status,
+        price,
+        // sale,
+        rate,
+        // tagId,
+        shortDes,
+        des,
+      },
+    } = req;
+
+    if (!name || !categoryId || !status || !price || !rate || !shortDes || !des)
+      throw new Error("Có lỗi xảy ra");
+
+    const category = await Category.findById(categoryId);
+
+    if (!category) throw new Error("Có lỗi xảy ra");
+
+    if (files) {
+      let resultUrls = [];
+      for (let file of files) {
+        const result = await uploadImage(file);
+        resultUrls.push(result.url);
+      }
+      await Product.create({
+        categoryId: category._id,
+        name,
+        status,
+        price: parseInt(price),
+        // sale,
+        rate: parseInt(rate),
+        // tagId,
+        shortDes,
+        des,
+        imgs: resultUrls,
+      });
+    } else
+      await Product.create({
+        categoryId: category._id,
+        name,
+        status,
+        price: parseInt(price),
+        // sale,
+        rate: parseInt(rate),
+        // tagId,
+        shortDes,
+        des,
+      });
+
+    return Response.success(res, { message: createSuccessMessage });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 exports.changeProduct = async (req, res, next) => {};
 
