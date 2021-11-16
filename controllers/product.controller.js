@@ -111,7 +111,7 @@ exports.addProduct = async (req, res, next) => {
         name,
         status,
         price,
-        // sale,
+        sale,
         rate,
         // tagId,
         shortDes,
@@ -119,7 +119,18 @@ exports.addProduct = async (req, res, next) => {
       },
     } = req;
 
-    if (!name || !categoryId || !status || !price || !rate || !shortDes || !des)
+    let product;
+
+    if (
+      !name ||
+      !categoryId ||
+      !status ||
+      !price ||
+      !rate ||
+      !shortDes ||
+      !des ||
+      !sale
+    )
       throw new Error("Có lỗi xảy ra");
 
     const category = await Category.findById(categoryId);
@@ -132,12 +143,12 @@ exports.addProduct = async (req, res, next) => {
         const result = await uploadImage(file);
         resultUrls.push(result.url);
       }
-      await Product.create({
+      product = await Product.create({
         categoryId: category._id,
         name,
         status,
         price: parseInt(price),
-        // sale,
+        sale: parseInt(sale),
         rate: parseInt(rate),
         // tagId,
         shortDes,
@@ -145,25 +156,27 @@ exports.addProduct = async (req, res, next) => {
         imgs: resultUrls,
       });
     } else
-      await Product.create({
+      product = await Product.create({
         categoryId: category._id,
         name,
         status,
         price: parseInt(price),
-        // sale,
+        sale: parseInt(sale),
         rate: parseInt(rate),
         // tagId,
         shortDes,
         des,
       });
 
-    return Response.success(res, { message: createSuccessMessage });
+    product._doc.id = product._id;
+
+    return Response.success(res, { message: createSuccessMessage, product });
   } catch (error) {
     return next(error);
   }
 };
 
-exports.changeProduct = async (req, res, next) => {
+exports.updateProduct = async (req, res, next) => {
   try {
     const {
       files,
@@ -173,7 +186,7 @@ exports.changeProduct = async (req, res, next) => {
         name,
         // status,
         price,
-        // sale,
+        sale,
         rate,
         // tagId,
         shortDes,
@@ -181,12 +194,22 @@ exports.changeProduct = async (req, res, next) => {
       },
     } = req;
 
-    if (!name || !categoryId || !status || !price || !rate || !shortDes || !des)
-      throw new Error("Có lỗi xảy ra");
+    if (
+      !productId ||
+      !categoryId ||
+      !name ||
+      !status ||
+      !price ||
+      !rate ||
+      !shortDes ||
+      !des
+    )
+      throw new Error(failMessage);
 
+    let product = await Product.find({ productId });
     const category = await Category.findById(categoryId);
 
-    if (!category) throw new Error("Có lỗi xảy ra");
+    if (!product || !category) throw new Error(failMessage);
 
     if (files) {
       let resultUrls = [];
@@ -194,12 +217,12 @@ exports.changeProduct = async (req, res, next) => {
         const result = await uploadImage(file);
         resultUrls.push(result.url);
       }
-      await Product.create({
+      product = await Product.findByIdAndUpdate(product._id, {
         categoryId: category._id,
         name,
         // status,
         price: parseInt(price),
-        // sale,
+        sale,
         rate: parseInt(rate),
         // tagId,
         shortDes,
@@ -207,19 +230,21 @@ exports.changeProduct = async (req, res, next) => {
         imgs: resultUrls,
       });
     } else
-      await Product.create({
+      product = await Product.findByIdAndUpdate(product._id, {
         categoryId: category._id,
         name,
         // status,
         price: parseInt(price),
-        // sale,
+        sale,
         rate: parseInt(rate),
         // tagId,
         shortDes,
         des,
       });
 
-    return Response.success(res, { message: createSuccessMessage });
+    product._doc.id = product._id;
+
+    return Response.success(res, { message: updateSuccessMessage, product });
   } catch (error) {
     return next(error);
   }

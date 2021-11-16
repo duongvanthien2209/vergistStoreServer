@@ -14,6 +14,10 @@ const ProductSchema = new mongoose.Schema({
       hot: false,
     },
   },
+  sale: {
+    type: Number,
+    default: 0,
+  },
   des: {
     type: String,
   },
@@ -32,6 +36,9 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 0,
+  },
+  size: {
+    type: String,
   },
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
