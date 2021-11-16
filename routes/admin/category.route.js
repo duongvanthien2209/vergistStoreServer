@@ -21,17 +21,17 @@ router.get("/", getAll);
 // @route   GET api/admin/Category/:categoryId
 // @desc    Get Detail
 // @access  Private
-router.get("/", getDetail);
+router.get("/:categoryId", getDetail);
 
 // @route   POST api/admin/Category/create
 // @desc    Create Category
 // @access  Private
-router.post("/create", upload.single("img"), create);
+router.post("/", upload.single("img"), create);
 
 // @route   POST api/admin/Category/update/:categoryId
 // @desc    Update Category
 // @access  Private
-router.post("/update/:categoryId", upload.single("img"), update);
+router.patch("/:categoryId", upload.single("img"), update);
 
 // @route   POST api/admin/Category/delete/:categoryId
 // @desc    Delete Category
