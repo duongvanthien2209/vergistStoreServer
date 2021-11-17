@@ -8,6 +8,7 @@ const handleError = require("../helpers/handleError.helper");
 
 // Controllers
 const {
+  changeNewsForProducts,
   changePriceForProducts,
 } = require("../controllers/user/addDb.controller");
 
@@ -30,7 +31,8 @@ router.use("/cart", require("./user/cart.route"));
 router.use(handleError);
 
 // Change newPrice to Price for Products
-router.get("/updatePrice", changePriceForProducts);
+router.get("/changeNewsForProducts", changeNewsForProducts);
+router.use(handleError);
 
 // Protected
 router.use(protect);

@@ -70,7 +70,8 @@ exports.changePriceForProducts = async (req, res) => {
       //   { $unset: { newPrice: 1 } },
       //   // { $set: { price: product._doc.newPrice } },
       // ]);
-      await Product.findByIdAndUpdate(product.id, { $unset: { newPrice: 1 } });
+      // await Product.findByIdAndUpdate(product.id, { $unset: { newPrice: 1 } });
+      await Product.findByIdAndUpdate(product.id, { $unset: { news: 1 } });
     }
 
     Response.success(res, { message: "Cập nhật thành công" });
@@ -79,28 +80,47 @@ exports.changePriceForProducts = async (req, res) => {
   }
 };
 
-exports.changeNewsForProducts = async (req, res) => {
+exports.changeNewsForProducts = async (req, res, next) => {
   try {
     const data = await readFile("./db.json");
 
     if (data) {
       const { products } = JSON.parse(data);
 
-      for (let product of products) {
-        // let obj = !product.hot && !product.news
-        //   ? (
+      let currentProducts = await Product.find();
 
-        //   )
-        //   : {
-        //       $unset: { news: 1 },
-        //     };
-        await Product.findOneAndUpdate(
-          { name: product.name },
-          { news: product.hot }
-        );
+      // for (let product of currentProducts) {
+      //   await Product.findByIdAndUpdate(product.id, {
+      //     $unset: { news: 1 },
+      //   });
+      // }
+
+      // currentProducts = await Product.find();
+
+      for (let i = 0; i <= currentProducts.length; i++) {
+        if (currentProducts[i]) {
+          //   let obj = {};
+          //   if (products[i].desc) obj["des"] = products[i].desc;
+          //   if (products[i].shortDesc) obj["shortDes"] = products[i].shortDesc;
+          await Product.findByIdAndUpdate(currentProducts[i]._id, {
+            $set: {
+              // ...obj,
+              // rate: products[i].rate,
+              sale: 0,
+            },
+            // $unset: {
+            //   news: 1,
+            // },
+          });
+        }
       }
 
-      Response.success(res, { message: "Thanh cong" });
+      Response.success(res, {
+        message: "Thanh cong",
+        currentProducts,
+        // currentProductsCount: currentProducts.length,
+        // count: products.length,
+      });
     }
   } catch (error) {
     return next(error);
