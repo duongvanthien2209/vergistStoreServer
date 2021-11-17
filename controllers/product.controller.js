@@ -21,10 +21,9 @@ exports.getAll = async (req, res, next) => {
     _page,
     _limit,
     categoryId,
-    newPrice_gte,
-    newPrice_lte,
+    price_gte,
+    price_lte,
     tagId, // Todo Late
-    oldPrice_gte, // Don't understand
     _sort,
     _order,
     news,
@@ -49,7 +48,7 @@ exports.getAll = async (req, res, next) => {
     if (newPrice_gte >= 0 && newPrice_lte >= 0) {
       queryObj = {
         ...queryObj,
-        newPrice: { $gt: newPrice_gte, $lt: newPrice_lte },
+        price: { $gt: price_gte, $lt: price_lte },
       };
     }
 
