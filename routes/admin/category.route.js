@@ -33,9 +33,9 @@ router.post("/", upload.single("img"), create);
 // @access  Private
 router.patch("/:categoryId", upload.single("img"), update);
 
-// @route   POST api/admin/Category/delete/:categoryId
+// @route   POST api/admin/Category/:categoryId
 // @desc    Delete Category
 // @access  Private
-router.post("/delete/:categoryId", update);
+router.delete("/:categoryId", update);
 
 module.exports = router;
