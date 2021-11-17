@@ -4,20 +4,26 @@ const multer = require("multer");
 const {
   addProduct,
   updateProduct,
+  deleteProduct,
 } = require("../../controllers/product.controller");
 
 const upload = multer({ dest: "public/uploads/products" });
 
 const router = express.Router();
 
-// @route   POST api/user/products/:productId
-// @desc    Get Detail Product
-// @access  Public
+// @route   POST api/admin/products
+// @desc    Add Product
+// @access  Private
 router.post("/", upload.array("imgs", 10), addProduct);
 
-// @route   PATCH api/user/products/:productId
-// @desc    Get Detail Product
-// @access  Public
+// @route   PATCH api/admin/products/:productId
+// @desc    Update Product
+// @access  Private
 router.patch("/:productId", upload.array("imgs", 10), updateProduct);
+
+// @route   DELETE api/admin/products/:productId
+// @desc    Delete Product
+// @access  Private
+router.delete("/:productId", deleteProduct);
 
 module.exports = router;

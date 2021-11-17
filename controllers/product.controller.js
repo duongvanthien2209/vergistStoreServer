@@ -109,7 +109,7 @@ exports.addProduct = async (req, res, next) => {
       body: {
         categoryId,
         name,
-        status,
+        // status,
         price,
         sale,
         rate,
@@ -146,7 +146,7 @@ exports.addProduct = async (req, res, next) => {
       product = await Product.create({
         categoryId: category._id,
         name,
-        status,
+        // status,
         price: parseInt(price),
         sale: parseInt(sale),
         rate: parseInt(rate),
@@ -159,7 +159,7 @@ exports.addProduct = async (req, res, next) => {
       product = await Product.create({
         categoryId: category._id,
         name,
-        status,
+        // status,
         price: parseInt(price),
         sale: parseInt(sale),
         rate: parseInt(rate),
@@ -184,7 +184,7 @@ exports.updateProduct = async (req, res, next) => {
       body: {
         categoryId,
         name,
-        // status,
+        status,
         price,
         sale,
         rate,
@@ -220,7 +220,7 @@ exports.updateProduct = async (req, res, next) => {
       product = await Product.findByIdAndUpdate(product._id, {
         categoryId: category._id,
         name,
-        // status,
+        status,
         price: parseInt(price),
         sale,
         rate: parseInt(rate),
@@ -233,7 +233,7 @@ exports.updateProduct = async (req, res, next) => {
       product = await Product.findByIdAndUpdate(product._id, {
         categoryId: category._id,
         name,
-        // status,
+        status,
         price: parseInt(price),
         sale,
         rate: parseInt(rate),
