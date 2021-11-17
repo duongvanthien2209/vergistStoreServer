@@ -25,6 +25,10 @@ router.use(handleError);
 router.use("/Category", require("./user/category.route"));
 router.use(handleError);
 
+// Carts
+router.use("/cart", require("./user/cart.route"));
+router.use(handleError);
+
 // Change newPrice to Price for Products
 router.get("/updatePrice", changePriceForProducts);
 
