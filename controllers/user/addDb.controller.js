@@ -1,5 +1,6 @@
 const Category = require("../../models/Category");
 const Product = require("../../models/Product");
+const Tag = require("../../models/Tag");
 
 const fs = require("fs");
 
@@ -85,34 +86,10 @@ exports.changeNewsForProducts = async (req, res, next) => {
     const data = await readFile("./db.json");
 
     if (data) {
-      const { products } = JSON.parse(data);
+      const { tags } = JSON.parse(data);
 
-      let currentProducts = await Product.find();
-
-      // for (let product of currentProducts) {
-      //   await Product.findByIdAndUpdate(product.id, {
-      //     $unset: { news: 1 },
-      //   });
-      // }
-
-      // currentProducts = await Product.find();
-
-      for (let i = 0; i <= currentProducts.length; i++) {
-        if (currentProducts[i]) {
-          //   let obj = {};
-          //   if (products[i].desc) obj["des"] = products[i].desc;
-          //   if (products[i].shortDesc) obj["shortDes"] = products[i].shortDesc;
-          await Product.findByIdAndUpdate(currentProducts[i]._id, {
-            $set: {
-              // ...obj,
-              // rate: products[i].rate,
-              sale: 0,
-            },
-            // $unset: {
-            //   news: 1,
-            // },
-          });
-        }
+      for (let tag of tags) {
+        await Tag.create({ name: tag.name });
       }
 
       Response.success(res, {

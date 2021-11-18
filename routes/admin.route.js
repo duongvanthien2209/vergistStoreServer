@@ -13,6 +13,10 @@ router.use(handleError);
 router.use("/products", require("./admin/product.route"));
 router.use(handleError);
 
+// Tags
+router.use("/tags", require("./admin/tag.route"));
+router.use(handleError);
+
 // Middlewares
 router.use(protect);
 

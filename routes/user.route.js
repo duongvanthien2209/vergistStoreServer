@@ -33,6 +33,12 @@ router.use(handleError);
 // Change newPrice to Price for Products
 router.get("/changeNewsForProducts", changeNewsForProducts);
 router.use(handleError);
+// Tags
+router.use("/tags", require("./user/tag.route"));
+router.use(handleError);
+
+// Change newPrice to Price for Products
+router.get("/updatePrice", changeNewsForProducts);
 
 // Protected
 router.use(protect);
