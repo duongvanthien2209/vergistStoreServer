@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const BillSchema = new mongoose.Schema({
+  total: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   dateCreate: {
     type: Date,
     default: Date.now(),

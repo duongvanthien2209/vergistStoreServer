@@ -35,4 +35,8 @@ router.get("/updatePrice", changePriceForProducts);
 // Protected
 router.use(protect);
 
+// Bills
+router.use("/bill", require("./user/bill.route"));
+router.use(handleError);
+
 module.exports = router;
