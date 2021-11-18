@@ -1,5 +1,6 @@
 const Category = require("../../models/Category");
 const Product = require("../../models/Product");
+const Tag = require("../../models/Tag");
 
 const fs = require("fs");
 
@@ -79,25 +80,15 @@ exports.changePriceForProducts = async (req, res) => {
   }
 };
 
-exports.changeNewsForProducts = async (req, res) => {
+exports.changeNewsForProducts = async (req, res, next) => {
   try {
     const data = await readFile("./db.json");
 
     if (data) {
-      const { products } = JSON.parse(data);
+      const { tags } = JSON.parse(data);
 
-      for (let product of products) {
-        // let obj = !product.hot && !product.news
-        //   ? (
-
-        //   )
-        //   : {
-        //       $unset: { news: 1 },
-        //     };
-        await Product.findOneAndUpdate(
-          { name: product.name },
-          { news: product.hot }
-        );
+      for (let tag of tags) {
+        await Tag.create({ name: tag.name });
       }
 
       Response.success(res, { message: "Thanh cong" });

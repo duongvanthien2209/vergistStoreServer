@@ -9,6 +9,7 @@ const handleError = require("../helpers/handleError.helper");
 // Controllers
 const {
   changePriceForProducts,
+  changeNewsForProducts,
 } = require("../controllers/user/addDb.controller");
 
 // UnProtected
@@ -25,8 +26,12 @@ router.use(handleError);
 router.use("/Category", require("./user/category.route"));
 router.use(handleError);
 
+// Tags
+router.use("/tags", require("./user/tag.route"));
+router.use(handleError);
+
 // Change newPrice to Price for Products
-router.get("/updatePrice", changePriceForProducts);
+router.get("/updatePrice", changeNewsForProducts);
 
 // Protected
 router.use(protect);
