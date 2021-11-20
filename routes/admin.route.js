@@ -15,6 +15,12 @@ router.use(handleError);
 
 // Tags
 router.use("/tags", require("./admin/tag.route"));
+// Bill
+router.use("/bill", require("./admin/bill.route"));
+router.use(handleError);
+
+// Bill Detail
+router.use("/billDetail", require("./admin/billDetail.route"));
 router.use(handleError);
 
 // Middlewares
