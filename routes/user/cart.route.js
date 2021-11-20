@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {
   getAll,
-  add,
+  create,
   update,
   delete: currentDelete,
 } = require("../../controllers/user/cart.controller");
@@ -16,12 +16,12 @@ router.get("/", getAll);
 // @route   POST api/user/cart
 // @desc    Add to cart
 // @access  Private
-router.post("/", add);
+router.post("/", create);
 
-// @route   PATCH api/user/cart/:cartId
-// @desc    Update to cart
-// @access  Private
-router.patch("/:cartId", update);
+// // @route   PATCH api/user/cart/:cartId
+// // @desc    Update to cart
+// // @access  Private
+// router.patch("/:cartId", update);
 
 // @route   DELETE api/user/cart/:cartId
 // @desc    Delete to cart

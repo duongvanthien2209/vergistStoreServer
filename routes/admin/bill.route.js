@@ -26,10 +26,10 @@ router.get("/getByUser/:userId", getAllByUser);
 // @access  Private
 router.get("/:billId", getDetail);
 
-// @route   PATCH api/admin/bill/:billId
-// @desc    Update Bill
-// @access  Private
-router.patch("/:billId", updateBillDetail);
+// // @route   PATCH api/admin/bill/:billId
+// // @desc    Update Bill
+// // @access  Private
+// router.patch("/:billId", updateBillDetail);
 
 // @route   PATCH api/admin/bill/updateStatus/:billId
 // @desc    Update Bill Status

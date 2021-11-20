@@ -40,27 +40,32 @@ exports.getAll = async (req, res, next) => {
   }
 };
 
-exports.add = async (req, res, next) => {
+exports.create = async (req, res, next) => {
   try {
     const {
-      body: { cartData },
+      user,
+      // body: { cartData },
     } = req;
 
-    let cart;
+    // let cart;
 
-    if (!cartData || !Array.isArray(cartData)) throw new Error(failMessage);
+    // if (!cartData || !Array.isArray(cartData)) throw new Error(failMessage);
 
-    cart = await Cart.create({});
-    for (let cartItem of cartData) {
-      const product = await Product.findById(cartItem.productId);
-      if (!product) throw new Error(failMessage);
-      if (!cartItem.quantity) throw new Error(failMessage);
-      await CartDetail.create({
-        quantity: parseInt(cartItem.quantity),
-        cartId: cart._id,
-        productId: product._id,
-      });
-    }
+    // cart = await Cart.create({});
+    // for (let cartItem of cartData) {
+    //   const product = await Product.findById(cartItem.productId);
+    //   if (!product) throw new Error(failMessage);
+    //   if (!cartItem.quantity) throw new Error(failMessage);
+    //   await CartDetail.create({
+    //     quantity: parseInt(cartItem.quantity),
+    //     cartId: cart._id,
+    //     productId: product._id,
+    //   });
+    // }
+
+    if (!user) throw new Error(failMessage);
+    const cart = await Cart.create({ userId: user._id });
+    cart._doc.id = cart._id;
 
     return Response.success(res, { message: createSuccessMessage, cart });
   } catch (error) {

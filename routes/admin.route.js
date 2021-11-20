@@ -17,6 +17,10 @@ router.use(handleError);
 router.use("/bill", require("./admin/bill.route"));
 router.use(handleError);
 
+// Bill Detail
+router.use("/billDetail", require("./admin/billDetail.route"));
+router.use(handleError);
+
 // Middlewares
 router.use(protect);
 

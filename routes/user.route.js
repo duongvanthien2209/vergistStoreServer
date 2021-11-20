@@ -25,15 +25,19 @@ router.use(handleError);
 router.use("/Category", require("./user/category.route"));
 router.use(handleError);
 
-// Carts
-router.use("/cart", require("./user/cart.route"));
-router.use(handleError);
-
 // Change newPrice to Price for Products
 router.get("/updatePrice", changePriceForProducts);
 
 // Protected
 router.use(protect);
+
+// Carts
+router.use("/cart", require("./user/cart.route"));
+router.use(handleError);
+
+// Cart Details
+router.use("/cartDetail", require("./user/cartDetail.route"));
+router.use(handleError);
 
 // Bills
 router.use("/bill", require("./user/bill.route"));
