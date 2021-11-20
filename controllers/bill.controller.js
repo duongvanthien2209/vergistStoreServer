@@ -20,7 +20,7 @@ const {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const {
+    let {
       query: { _limit, _page },
     } = req;
 
@@ -40,7 +40,7 @@ exports.getAll = async (req, res, next) => {
 
 exports.getAllByUser = async (req, res, next) => {
   try {
-    const {
+    let {
       params: { userId },
       query: { _limit, _page },
       user,
@@ -51,7 +51,8 @@ exports.getAllByUser = async (req, res, next) => {
 
     if (!userId && user) userId = user._id;
     if (!userId) throw new Error(failMessage);
-    const user = await User.find;
+    if (!user) user = await User.findById(userId);
+    if (!user) throw new Error(failMessage);
 
     const total = await Bill.find({ userId }).count();
     const bills = await Bill.find({ userId })
@@ -67,7 +68,7 @@ exports.getAllByUser = async (req, res, next) => {
 
 exports.getDetail = async (req, res, next) => {
   try {
-    const {
+    let {
       query: { _limit, _page },
       params: { billId },
     } = req;
@@ -96,27 +97,38 @@ exports.getDetail = async (req, res, next) => {
   }
 };
 
+// Cập nhật lại code nếu thanh toán bằng thẻ ngân hàng...
 exports.create = async (req, res, next) => {
   try {
     const {
       params: { cartId },
+      body: { payment, name, address, phoneNumber },
+      user,
     } = req;
 
+    if (!user || !payment || !name || !address || !phoneNumber)
+      throw new Error(failMessage);
     if (!cartId) throw new Error(failMessage);
     const cart = await Cart.findById(cartId);
     if (!cart) throw new Error(failMessage);
 
-    const cartDetails = CartDetail.find({ cartId });
+    const cartDetails = await CartDetail.find({ cartId });
     if (!cartDetails) throw new Error(failMessage);
 
-    let bill = await Bill.create({});
+    let bill = await Bill.create({
+      userId: user._id,
+      payment,
+      name,
+      address,
+      phoneNumber,
+    });
     let total = 0;
     for (let cartDetail of cartDetails) {
       const product = await Product.findById(cartDetail.productId);
       if (!product) throw new Error(failMessage);
       total += product.price * cartDetail.quantity;
 
-      const billDetail = await BillDetail.create({
+      await BillDetail.create({
         quantity: cartDetail.quantity,
         billId: bill._id,
         productId: product._id,
@@ -147,8 +159,11 @@ exports.updateBillDetail = async (req, res, next) => {
     let bill = await Bill.findById(billId);
     if (!bill) throw new Error(failMessage);
 
-    const billDetails = await BillDetail.find({ billId: bill._id });
-    for (let billDetail of billDetails)
+    if (bill.status !== "Đợi xác nhận")
+      throw new Error("Chỉ có đơn hàng đang xác nhận mới có thể cập nhật lại");
+
+    const oldBillDetails = await BillDetail.find({ billId: bill._id });
+    for (let billDetail of oldBillDetails)
       await BillDetail.findByIdAndDelete(billDetail._id);
 
     let total = 0;
@@ -157,13 +172,16 @@ exports.updateBillDetail = async (req, res, next) => {
       if (!product) throw new Error(failMessage);
       total += product.price * billDetail.quantity;
 
-      const currentBillDetail = await BillDetail.create({
+      await BillDetail.create({
         quantity: billDetail.quantity,
         billId: bill._id,
         productId: product._id,
       });
     }
-    bill = await Bill.findByIdAndUpdate(bill._id, { total });
+    bill = await Bill.findByIdAndUpdate(bill._id, {
+      total,
+      dateModified: Date.now(),
+    });
     bill._doc.id = bill._id;
 
     return Response.success(res, { message: updateSuccessMessage, bill });
@@ -172,11 +190,13 @@ exports.updateBillDetail = async (req, res, next) => {
   }
 };
 
+// User chỉ có quyền hủy đơn hàng, Amin có quyền cập nhật các trạng thái khác
 exports.updateStatus = async (req, res, next) => {
   try {
     const {
       params: { billId },
       body: { status },
+      user,
     } = req;
 
     if (!billId || !status) throw new Error(failMessage);
@@ -184,7 +204,36 @@ exports.updateStatus = async (req, res, next) => {
     let bill = await Bill.findById(billId);
     if (!bill) throw new Error(failMessage);
 
-    bill = await Bill.findByIdAndUpdate(bill._id, { status });
+    if (user.role === "user" && status !== "Đã hủy")
+      throw new Error("Người dùng chỉ có quyền hủy đơn hàng");
+
+    if (
+      bill.status === "Đợi xác nhận" &&
+      !(status === "Đã xác nhận" || status === "Đã hủy")
+    )
+      throw new Error(
+        'Bạn chỉ có thể cập nhật trạng thái "Đã xác nhận" hoặc "Đã hủy"'
+      );
+    if (
+      bill.status === "Đã xác nhận" &&
+      !(status === "Đang vận chuyển" || status === "Đã thanh toán")
+    )
+      throw new Error(
+        'Bạn chỉ có thể cập nhật trạng thái "Đang vận chuyển" hoặc "Đã thanh toán"'
+      );
+    if (bill.status === "Đang vận chuyển" && status !== "Đã giao hàng")
+      throw new Error('Bạn chỉ có thể cập nhật trạng thái "Đã giao hàng"');
+    if (bill.status === "Đã giao hàng" && status !== "Đã thanh toán")
+      throw new Error('Bạn chỉ có thể cập nhật trạng thái "Đã thanh toán"');
+    if (bill.status === "Đã hủy")
+      throw new Error(
+        "Đơn hàng đã hủy, bạn không thể cập nhật trạng thái cho nó"
+      );
+
+    bill = await Bill.findByIdAndUpdate(bill._id, {
+      status,
+      dateModified: Date.now(),
+    });
     bill._doc.id = bill._id;
 
     return Response.success(res, { message: updateSuccessMessage, bill });

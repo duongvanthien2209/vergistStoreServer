@@ -3,6 +3,7 @@ const CartDetail = require("../../models/CartDetail");
 const Product = require("../../models/Product");
 
 const Response = require("../../helpers/response.helper");
+const constant = require("../../constants/index");
 
 const {
   response: {
@@ -15,17 +16,25 @@ const {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const {
-      params: { cartId },
+    let {
+      query: { _limit, _page },
+      user,
     } = req;
 
-    if (!cartId) throw new Error(failMessage);
-    const cart = await Cart.findById(cartId);
+    _page = parseInt(_page) || 1;
+    _limit = parseInt(_limit) || constant._limit;
+
+    if (!user) throw new Error(failMessage);
+    const cart = await Cart.findOne({ userId: user._id });
     if (!cart) throw new Error(failMessage);
-    const cartDetails = await CartDetail.find({ cartId }).populate("productId");
+    const total = await CartDetail.find({ cartId: cart._id }).count();
+    const cartDetails = await CartDetail.find({ cartId: cart._id })
+      .populate("productId")
+      .skip((_page - 1) * _limit)
+      .limit(_limit);
     if (!cartDetails) throw new Error(failMessage);
 
-    return Response.success(res, { cartDetails });
+    return Response.success(res, { cartDetails, total });
   } catch (error) {
     return next(error);
   }
@@ -59,6 +68,7 @@ exports.add = async (req, res, next) => {
   }
 };
 
+// Update từng sản phẩm
 exports.update = async (req, res, next) => {
   try {
     const {

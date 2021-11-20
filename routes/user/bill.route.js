@@ -22,7 +22,7 @@ router.get("/:billId", getDetail);
 // @route   GET api/user/bill/create/:cartId
 // @desc    Create Bill From Cart
 // @access  Private
-router.get("/create/:cartId", create);
+router.post("/create/:cartId", create);
 
 // @route   POST api/user/bill/:billId
 // @desc    Update Status For Bill -> người dùng hủy đơn hàng
