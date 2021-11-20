@@ -45,7 +45,7 @@ exports.getAll = async (req, res, next) => {
       };
     }
 
-    if (newPrice_gte >= 0 && newPrice_lte >= 0) {
+    if (price_gte >= 0 && price_lte >= 0) {
       queryObj = {
         ...queryObj,
         price: { $gt: price_gte, $lt: price_lte },
