@@ -3,6 +3,7 @@ const remove_Id = require("../utils/remove_Id");
 
 const Category = require("../models/Category");
 const Product = require("../models/Product");
+const Tag = require("../models/Tag");
 
 const Response = require("../helpers/response.helper");
 const uploadImage = require("../utils/uploadImage");
@@ -23,7 +24,7 @@ exports.getAll = async (req, res, next) => {
     categoryId,
     price_gte,
     price_lte,
-    tagId, // Todo Late
+    tagId,
     _sort,
     _order,
     news,
@@ -39,9 +40,18 @@ exports.getAll = async (req, res, next) => {
 
     if (categoryId) {
       const category = await Category.findById(categoryId);
-      if (!category) throw new Error("Có lỗi xảy ra");
+      if (!category) throw new Error(failMessage);
       queryObj = {
         categoryId,
+      };
+    }
+
+    if (tagId) {
+      const tag = await Tag.findById(tagId);
+      if (!tag) throw new Error(failMessage);
+      queryObj = {
+        ...queryObj,
+        tagId,
       };
     }
 
@@ -63,6 +73,7 @@ exports.getAll = async (req, res, next) => {
 
     if (_sort && _order)
       products = await Product.find({ ...queryObj })
+        .populate(["categoryId", "tagId"])
         .sort({
           [sort]: _order === "asc" ? 1 : -1,
         })
@@ -70,6 +81,7 @@ exports.getAll = async (req, res, next) => {
         .limit(_limit);
     else
       products = await Product.find({ ...queryObj })
+        .populate(["categoryId", "tagId"])
         .skip((_page - 1) * _limit)
         .limit(_limit);
 
@@ -90,7 +102,7 @@ exports.getProduct = async (req, res, next) => {
     } = req;
 
     const product = await Product.findById(productId).populate("categoryId");
-    if (!product) throw new Error("Có lỗi xảy ra");
+    if (!product) throw new Error(failMessage);
 
     // Add Id
     product._doc.id = product._id;
@@ -112,7 +124,7 @@ exports.addProduct = async (req, res, next) => {
         price,
         sale,
         rate,
-        // tagId,
+        tagId,
         shortDes,
         des,
       },
@@ -128,13 +140,14 @@ exports.addProduct = async (req, res, next) => {
       !rate ||
       !shortDes ||
       !des ||
-      !sale
+      !sale ||
+      !tagId
     )
-      throw new Error("Có lỗi xảy ra");
+      throw new Error(failMessage);
 
     const category = await Category.findById(categoryId);
 
-    if (!category) throw new Error("Có lỗi xảy ra");
+    if (!category) throw new Error(failMessage);
 
     if (files) {
       let resultUrls = [];
@@ -149,7 +162,7 @@ exports.addProduct = async (req, res, next) => {
         price: parseInt(price),
         sale: parseInt(sale),
         rate: parseInt(rate),
-        // tagId,
+        tagId,
         shortDes,
         des,
         imgs: resultUrls,
@@ -162,7 +175,7 @@ exports.addProduct = async (req, res, next) => {
         price: parseInt(price),
         sale: parseInt(sale),
         rate: parseInt(rate),
-        // tagId,
+        tagId,
         shortDes,
         des,
       });
@@ -187,7 +200,7 @@ exports.updateProduct = async (req, res, next) => {
         price,
         sale,
         rate,
-        // tagId,
+        tagId,
         shortDes,
         des,
       },
@@ -201,7 +214,8 @@ exports.updateProduct = async (req, res, next) => {
       !price ||
       !rate ||
       !shortDes ||
-      !des
+      !des ||
+      !tagId
     )
       throw new Error(failMessage);
 
@@ -223,7 +237,7 @@ exports.updateProduct = async (req, res, next) => {
         price: parseInt(price),
         sale,
         rate: parseInt(rate),
-        // tagId,
+        tagId,
         shortDes,
         des,
         imgs: resultUrls,
@@ -236,7 +250,7 @@ exports.updateProduct = async (req, res, next) => {
         price: parseInt(price),
         sale,
         rate: parseInt(rate),
-        // tagId,
+        tagId,
         shortDes,
         des,
       });
@@ -256,7 +270,7 @@ exports.deleteProduct = async (req, res, next) => {
     } = req;
 
     const product = await Product.findById(productId);
-    if (!product) throw new Error("Có lỗi xảy ra");
+    if (!product) throw new Error(failMessage);
     await Product.findByIdAndDelete(productId);
     return Response.success(res, { message: "Xóa thành công" });
   } catch (error) {

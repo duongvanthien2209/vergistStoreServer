@@ -103,3 +103,33 @@ exports.changeNewsForProducts = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.addTagToProducts = async (req, res, next) => {
+  try {
+    const data = await readFile("./db.json");
+
+    if (data) {
+      const { products, tags } = JSON.parse(data);
+      const currentProducts = await Product.find();
+
+      for (let i = 0; i <= products.length; i++) {
+        const tag = await Tag.findOne({
+          name: tags[products[i].tagId - 1].name,
+        });
+        if (!tag) throw new Error("Có lỗi xảy ra");
+        await Product.findByIdAndUpdate(currentProducts[i]._id, {
+          tagId: tag._id,
+        });
+      }
+
+      Response.success(res, {
+        message: "Thanh cong",
+        currentProducts,
+        // currentProductsCount: currentProducts.length,
+        // count: products.length,
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
