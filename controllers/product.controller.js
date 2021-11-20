@@ -27,7 +27,8 @@ exports.getAll = async (req, res, next) => {
     tagId,
     _sort,
     _order,
-    news,
+    new: currentNew,
+    hot,
     q,
   } = req.query;
 
@@ -62,10 +63,24 @@ exports.getAll = async (req, res, next) => {
       };
     }
 
-    if (news && (news === true || news === false)) {
+    if (currentNew && (currentNew === "true" || currentNew === "false")) {
       queryObj = {
         ...queryObj,
-        news,
+        "status.new": currentNew === "true",
+      };
+    }
+
+    if (hot && (hot === "true" || hot === "false")) {
+      queryObj = {
+        ...queryObj,
+        "status.hot": hot === "true",
+      };
+    }
+
+    if (q) {
+      queryObj = {
+        ...queryObj,
+        $text: { $search: q },
       };
     }
 
