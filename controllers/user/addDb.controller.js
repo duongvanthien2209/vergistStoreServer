@@ -133,3 +133,21 @@ exports.addTagToProducts = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.changeImageToProduct = async (req, res, next) => {
+  try {
+    const products = await Product.find();
+    for (let product of products) {
+      await Product.findByIdAndUpdate(product._id, {
+        $set: { imgs: product.img },
+        $unset: { img: 1 },
+      });
+    }
+
+    Response.success(res, {
+      message: "Thanh cong",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};

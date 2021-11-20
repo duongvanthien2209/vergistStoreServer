@@ -11,6 +11,7 @@ const {
   changeNewsForProducts,
   changePriceForProducts,
   addTagToProducts,
+  changeImageToProduct,
 } = require("../controllers/user/addDb.controller");
 
 // UnProtected
@@ -39,7 +40,7 @@ router.use("/tags", require("./user/tag.route"));
 router.use(handleError);
 
 // Change newPrice to Price for Products
-router.get("/updatePrice", addTagToProducts);
+router.get("/updatePrice", changeImageToProduct);
 
 // Protected
 router.use(protect);

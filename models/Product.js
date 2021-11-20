@@ -14,6 +14,7 @@ const ProductSchema = new mongoose.Schema({
       hot: false,
     },
   },
+  // Percent 0 - 100
   sale: {
     type: Number,
     default: 0,
