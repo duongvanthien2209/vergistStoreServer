@@ -14,7 +14,7 @@ const router = express.Router();
 // @route   POST api/admin/products
 // @desc    Add Product
 // @access  Private
-router.post("/", upload.array("imgs", 10), addProduct);
+router.post("/", upload.array("imgs"), addProduct);
 
 // @route   PATCH api/admin/products/:productId
 // @desc    Update Product

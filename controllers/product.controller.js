@@ -137,8 +137,8 @@ exports.addProduct = async (req, res, next) => {
         name,
         // status,
         price,
-        sale,
-        rate,
+        // sale,
+        // rate,
         tagId,
         shortDes,
         des,
@@ -150,12 +150,12 @@ exports.addProduct = async (req, res, next) => {
     if (
       !name ||
       !categoryId ||
-      !status ||
+      // !status ||
       !price ||
-      !rate ||
+      // !rate ||
       !shortDes ||
       !des ||
-      !sale ||
+      // !sale ||
       !tagId
     )
       throw new Error(failMessage);
@@ -175,8 +175,8 @@ exports.addProduct = async (req, res, next) => {
         name,
         // status,
         price: parseInt(price),
-        sale: parseInt(sale),
-        rate: parseInt(rate),
+        // sale: parseInt(sale),
+        // rate: parseInt(rate),
         tagId,
         shortDes,
         des,
@@ -188,8 +188,8 @@ exports.addProduct = async (req, res, next) => {
         name,
         // status,
         price: parseInt(price),
-        sale: parseInt(sale),
-        rate: parseInt(rate),
+        // sale: parseInt(sale),
+        // rate: parseInt(rate),
         tagId,
         shortDes,
         des,
