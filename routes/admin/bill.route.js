@@ -39,6 +39,6 @@ router.patch("/updateStatus/:billId", updateStatus);
 // @route   DELETE api/admin/bill/:billId
 // @desc    Update Bill
 // @access  Private
-router.patch("/:billId", currentDelete);
+router.delete("/:billId", currentDelete);
 
 module.exports = router;
