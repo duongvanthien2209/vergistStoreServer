@@ -1,4 +1,4 @@
-const Bill = require("../models/bill");
+const Bill = require("../models/Bill");
 const User = require("../models/User");
 const Cart = require("../models/Cart");
 const CartDetail = require("../models/CartDetail");
@@ -29,6 +29,7 @@ exports.getAll = async (req, res, next) => {
 
     const total = await Bill.find().count();
     const bills = await Bill.find()
+      .populate("userId")
       .skip((_page - 1) * _limit)
       .limit(_limit);
 
@@ -84,6 +85,7 @@ exports.getDetail = async (req, res, next) => {
 
     const total = await BillDetail.find({ billId: bill._id }).count();
     const billDetails = await BillDetail.find({ billId: bill._id })
+      .populate("productId")
       .skip((_page - 1) * _limit)
       .limit(_limit);
 
@@ -101,18 +103,16 @@ exports.getDetail = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const {
-      params: { cartId },
       body: { payment, name, address, phoneNumber },
       user,
     } = req;
 
     if (!user || !payment || !name || !address || !phoneNumber)
       throw new Error(failMessage);
-    if (!cartId) throw new Error(failMessage);
-    const cart = await Cart.findById(cartId);
+    const cart = await Cart.findOne({ userId: user._id });
     if (!cart) throw new Error(failMessage);
 
-    const cartDetails = await CartDetail.find({ cartId });
+    const cartDetails = await CartDetail.find({ cartId: cart._id });
     if (!cartDetails) throw new Error(failMessage);
 
     let bill = await Bill.create({
@@ -204,7 +204,7 @@ exports.updateStatus = async (req, res, next) => {
     let bill = await Bill.findById(billId);
     if (!bill) throw new Error(failMessage);
 
-    if (user.role === "user" && status !== "Đã hủy")
+    if (user && user.role === "user" && status !== "Đã hủy")
       throw new Error("Người dùng chỉ có quyền hủy đơn hàng");
 
     if (
@@ -230,10 +230,11 @@ exports.updateStatus = async (req, res, next) => {
         "Đơn hàng đã hủy, bạn không thể cập nhật trạng thái cho nó"
       );
 
-    bill = await Bill.findByIdAndUpdate(bill._id, {
+    await Bill.findByIdAndUpdate(bill._id, {
       status,
       dateModified: Date.now(),
     });
+    bill = await Bill.findById(billId);
     bill._doc.id = bill._id;
 
     return Response.success(res, { message: updateSuccessMessage, bill });

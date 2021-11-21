@@ -29,11 +29,25 @@ exports.create = async (req, res, next) => {
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
 
-    const cartDetail = await CartDetail.create({
-      quantity: parseInt(quantity),
-      productId,
+    let cartDetail = await CartDetail.findOne({
       cartId: cart._id,
+      productId: product._id,
     });
+
+    if (cartDetail) {
+      cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
+        quantity: cartDetail.quantity + parseInt(quantity),
+      });
+    } else {
+      cartDetail = await CartDetail.create({
+        quantity: parseInt(quantity),
+        productId,
+        cartId: cart._id,
+      });
+    }
+    cartDetail = await CartDetail.findById(cartDetail._id).populate(
+      "productId"
+    );
     cartDetail._doc.id = cartDetail._id;
 
     return Response.success(res, { message: createSuccessMessage, cartDetail });

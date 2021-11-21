@@ -14,6 +14,6 @@ router.patch("/:billDetailId", update);
 // @route   DELETE api/admin/billDetail/:billDetailId
 // @desc    Delete BillDetail
 // @access  Private
-router.patch("/:billDetailId", currentDelete);
+router.delete("/:billDetailId", currentDelete);
 
 module.exports = router;

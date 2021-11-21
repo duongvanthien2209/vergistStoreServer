@@ -19,14 +19,14 @@ router.get("/", getAllByUser);
 // @access  Private
 router.get("/:billId", getDetail);
 
-// @route   GET api/user/bill/create/:cartId
+// @route   GET api/user/bill
 // @desc    Create Bill From Cart
 // @access  Private
-router.post("/create/:cartId", create);
+router.post("/", create);
 
 // @route   POST api/user/bill/:billId
 // @desc    Update Status For Bill -> người dùng hủy đơn hàng
 // @access  Private
-router.post("/:billId", updateStatus);
+router.patch("/:billId", updateStatus);
 
 module.exports = router;
