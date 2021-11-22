@@ -139,6 +139,7 @@ exports.addProduct = async (req, res, next) => {
         price,
         // sale,
         // rate,
+        size,
         tagId,
         shortDes,
         des,
@@ -150,11 +151,12 @@ exports.addProduct = async (req, res, next) => {
     if (
       !name ||
       !categoryId ||
+      !size ||
       // !status ||
       !price ||
       // !rate ||
-      !shortDes ||
-      !des ||
+      // !shortDes ||
+      // !des ||
       // !sale ||
       !tagId
     )
@@ -164,6 +166,17 @@ exports.addProduct = async (req, res, next) => {
 
     if (!category) throw new Error(failMessage);
 
+    let obj = {
+      categoryId: category._id,
+      name,
+      price: parseInt(price),
+      size,
+      tagId,
+    };
+
+    if (des) obj = { ...obj, des };
+    if (shortDes) obj = { ...obj, shortDes };
+
     if (files) {
       let resultUrls = [];
       for (let file of files) {
@@ -171,28 +184,32 @@ exports.addProduct = async (req, res, next) => {
         resultUrls.push(result.url);
       }
       product = await Product.create({
-        categoryId: category._id,
-        name,
-        // status,
-        price: parseInt(price),
-        // sale: parseInt(sale),
-        // rate: parseInt(rate),
-        tagId,
-        shortDes,
-        des,
+        // categoryId: category._id,
+        // name,
+        // // status,
+        // price: parseInt(price),
+        // size,
+        // // sale: parseInt(sale),
+        // // rate: parseInt(rate),
+        // tagId,
+        // shortDes,
+        // des,
+        ...obj,
         imgs: resultUrls,
       });
     } else
       product = await Product.create({
-        categoryId: category._id,
-        name,
-        // status,
-        price: parseInt(price),
-        // sale: parseInt(sale),
-        // rate: parseInt(rate),
-        tagId,
-        shortDes,
-        des,
+        // categoryId: category._id,
+        // name,
+        // // status,
+        // price: parseInt(price),
+        // size,
+        // // sale: parseInt(sale),
+        // // rate: parseInt(rate),
+        // tagId,
+        // shortDes,
+        // des,
+        ...obj,
       });
 
     product._doc.id = product._id;
@@ -205,16 +222,19 @@ exports.addProduct = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
   try {
-    const {
+    let {
       files,
       params: { productId },
       body: {
         categoryId,
         name,
-        status,
+        // status,
+        isNew,
+        isHot,
         price,
         sale,
-        rate,
+        size,
+        // rate,
         tagId,
         shortDes,
         des,
@@ -225,19 +245,35 @@ exports.updateProduct = async (req, res, next) => {
       !productId ||
       !categoryId ||
       !name ||
-      !status ||
+      // !status ||
       !price ||
-      !rate ||
+      // !rate ||
       !shortDes ||
       !des ||
       !tagId
     )
       throw new Error(failMessage);
 
-    let product = await Product.find({ productId });
+    let product = await Product.findById(productId);
     const category = await Category.findById(categoryId);
 
     if (!product || !category) throw new Error(failMessage);
+
+    let obj = {
+      categoryId: category._id,
+      name,
+      price: parseInt(price),
+      sale: parseFloat(sale),
+      size,
+      tagId,
+    };
+
+    if (des) obj = { ...obj, des };
+    if (shortDes) obj = { ...obj, shortDes };
+    if (isNew === "true" || isNew === "false")
+      obj = { ...obj, "status.new": isNew };
+    if (isHot === "true" || isHot === "false")
+      obj = { ...obj, "status.hot": isHot };
 
     if (files) {
       let resultUrls = [];
@@ -246,28 +282,40 @@ exports.updateProduct = async (req, res, next) => {
         resultUrls.push(result.url);
       }
       product = await Product.findByIdAndUpdate(product._id, {
-        categoryId: category._id,
-        name,
-        status,
-        price: parseInt(price),
-        sale,
-        rate: parseInt(rate),
-        tagId,
-        shortDes,
-        des,
+        // categoryId: category._id,
+        // name,
+        // // status,
+        // status: {
+        //   new: isNew,
+        //   hot: isHot,
+        // },
+        // price: parseInt(price),
+        // sale: parseFloat(sale),
+        // // rate: parseInt(rate),
+        // size,
+        // tagId,
+        // shortDes,
+        // des,
+        ...obj,
         imgs: resultUrls,
       });
     } else
       product = await Product.findByIdAndUpdate(product._id, {
-        categoryId: category._id,
-        name,
-        status,
-        price: parseInt(price),
-        sale,
-        rate: parseInt(rate),
-        tagId,
-        shortDes,
-        des,
+        // categoryId: category._id,
+        // name,
+        // // status,
+        // status: {
+        //   new: isNew,
+        //   hot: isHot,
+        // },
+        // price: parseInt(price),
+        // sale: parseFloat(sale),
+        // // rate: parseInt(rate),
+        // size,
+        // tagId,
+        // shortDes,
+        // des,
+        ...obj,
       });
 
     product._doc.id = product._id;
