@@ -241,6 +241,9 @@ exports.updateProduct = async (req, res, next) => {
       },
     } = req;
 
+    isNew = isNew === "true";
+    isHot = isHot === "true";
+
     if (
       !productId ||
       !categoryId ||
