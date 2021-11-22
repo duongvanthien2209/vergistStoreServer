@@ -31,6 +31,12 @@ const BillSchema = new mongoose.Schema({
     required: true,
     default: "Trực tiếp",
   },
+  // Hóa đơn đã thanh toán hay chưa
+  isCompleted: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
   // Thông tin người nhận
   name: {
     type: String,

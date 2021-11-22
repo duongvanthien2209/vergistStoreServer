@@ -116,7 +116,9 @@ exports.getProduct = async (req, res, next) => {
       params: { productId },
     } = req;
 
-    const product = await Product.findById(productId).populate("categoryId");
+    const product = await Product.findById(productId).populate(
+      "categoryId tagId"
+    );
     if (!product) throw new Error(failMessage);
 
     // Add Id
