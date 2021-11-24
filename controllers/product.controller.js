@@ -129,6 +129,8 @@ exports.getProduct = async (req, res, next) => {
 
     // Add Id
     product._doc.id = product._id;
+    product._doc.categoryId._doc.id = product._doc.categoryId._id;
+    product._doc.tagId._doc.id = product._doc.tagId._id;
 
     return Response.success(res, { product });
   } catch (error) {
@@ -220,7 +222,10 @@ exports.addProduct = async (req, res, next) => {
         ...obj,
       });
 
+    product = await Product.findById(product._id).populate("categoryId tagId");
     product._doc.id = product._id;
+    product._doc.categoryId._doc.id = product._doc.categoryId._id;
+    product._doc.tagId._doc.id = product._doc.tagId._id;
 
     return Response.success(res, { message: createSuccessMessage, product });
   } catch (error) {
@@ -329,7 +334,10 @@ exports.updateProduct = async (req, res, next) => {
         ...obj,
       });
 
+    product = await Product.findById(product._id).populate("categoryId tagId");
     product._doc.id = product._id;
+    product._doc.categoryId._doc.id = product._doc.categoryId._id;
+    product._doc.tagId._doc.id = product._doc.tagId._id;
 
     return Response.success(res, { message: updateSuccessMessage, product });
   } catch (error) {
