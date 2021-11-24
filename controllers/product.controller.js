@@ -88,7 +88,7 @@ exports.getAll = async (req, res, next) => {
 
     if (_sort && _order)
       products = await Product.find({ ...queryObj })
-        // .populate(["categoryId", "tagId"])
+        .populate(["categoryId", "tagId"])
         .sort({
           [sort]: _order === "asc" ? 1 : -1,
         })
@@ -96,9 +96,15 @@ exports.getAll = async (req, res, next) => {
         .limit(_limit);
     else
       products = await Product.find({ ...queryObj })
-        // .populate(["categoryId", "tagId"])
+        .populate(["categoryId", "tagId"])
         .skip((_page - 1) * _limit)
         .limit(_limit);
+
+    products = products.map((item) => {
+      item._doc.categoryId._doc.id = item._doc.categoryId._id;
+      item._doc.tagId._doc.id = item._doc.tagId._id;
+      return item;
+    });
 
     return Response.success(res, {
       // Add propertype id for db

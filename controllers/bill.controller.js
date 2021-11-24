@@ -21,11 +21,15 @@ const {
 exports.getAll = async (req, res, next) => {
   try {
     let {
-      query: { _limit, _page },
+      query: { _limit, _page, q, status },
     } = req;
 
     _page = parseInt(_page) || 1;
     _limit = parseInt(_limit) || constant._limit;
+
+    let obj = {};
+
+    // if(q)
 
     const total = await Bill.find().count();
     const bills = await Bill.find()
@@ -39,6 +43,7 @@ exports.getAll = async (req, res, next) => {
   }
 };
 
+// Lấy danh sách hóa đơn của một người dùng cụ thể
 exports.getAllByUser = async (req, res, next) => {
   try {
     let {
