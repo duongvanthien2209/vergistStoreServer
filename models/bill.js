@@ -14,7 +14,7 @@ const BillSchema = new mongoose.Schema({
   dateModified: {
     type: Date,
   },
-  // Đợi xác nhận, Đã xác nhận, Đang vận chuyển, Đã giao hàng, Đã thanh toán, Đã hủy
+  // Đợi xác nhận, Đã xác nhận, Đang vận chuyển, Đã giao hàng, Đã hủy
   status: {
     type: String,
     default: "Đợi xác nhận",
