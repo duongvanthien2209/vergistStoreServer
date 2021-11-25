@@ -281,7 +281,7 @@ exports.updateProduct = async (req, res, next) => {
       !price ||
       // !rate ||
       !shortDes ||
-      !des ||
+      // !des ||
       !tagId
     )
       throw new Error(failMessage);
@@ -298,10 +298,11 @@ exports.updateProduct = async (req, res, next) => {
       sale: parseFloat(sale),
       unit,
       tagId,
+      shortDes,
     };
 
     if (des) obj = { ...obj, des };
-    if (shortDes) obj = { ...obj, shortDes };
+    // if (shortDes) obj = { ...obj, shortDes };
     if (isNew === "true" || isNew === "false")
       obj = { ...obj, "status.new": isNew };
     if (isHot === "true" || isHot === "false")
