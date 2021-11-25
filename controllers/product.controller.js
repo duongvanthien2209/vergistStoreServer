@@ -84,21 +84,30 @@ exports.getAll = async (req, res, next) => {
     //   };
     // }
 
-    const count = await Product.find({ ...queryObj }).count();
+    let count = await Product.find({ ...queryObj }).count();
 
     if (_sort && _order)
       products = await Product.find({ ...queryObj })
         .populate(["categoryId", "tagId"])
         .sort({
           [sort]: _order === "asc" ? 1 : -1,
-        })
-        .skip((_page - 1) * _limit)
-        .limit(_limit);
+        });
+    // .skip((_page - 1) * _limit)
+    // .limit(_limit);
     else
-      products = await Product.find({ ...queryObj })
-        .populate(["categoryId", "tagId"])
-        .skip((_page - 1) * _limit)
-        .limit(_limit);
+      products = await Product.find({ ...queryObj }).populate([
+        "categoryId",
+        "tagId",
+      ]);
+    // .skip((_page - 1) * _limit)
+    // .limit(_limit);
+
+    if (q) {
+      products = products.filter((item, index) => {
+        // const index =
+        return true;
+      });
+    }
 
     products = products.map((item) => {
       item._doc.categoryId._doc.id = item._doc.categoryId._id;

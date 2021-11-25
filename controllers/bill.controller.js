@@ -127,7 +127,7 @@ exports.getDetail = async (req, res, next) => {
 
     if (!billId) throw new Error(failMessage);
 
-    const bill = await Bill.findById(billId);
+    const bill = await Bill.findById(billId).populate("userId");
     if (!bill) throw new Error(failMessage);
     bill._doc.id = bill._id;
 
