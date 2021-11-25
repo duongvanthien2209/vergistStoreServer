@@ -163,7 +163,8 @@ exports.addProduct = async (req, res, next) => {
         price,
         // sale,
         // rate,
-        size,
+        // size,
+        unit,
         tagId,
         shortDes,
         des,
@@ -175,7 +176,7 @@ exports.addProduct = async (req, res, next) => {
     if (
       !name ||
       !categoryId ||
-      !size ||
+      !unit ||
       // !status ||
       !price ||
       // !rate ||
@@ -194,7 +195,7 @@ exports.addProduct = async (req, res, next) => {
       categoryId: category._id,
       name,
       price: parseInt(price),
-      size,
+      unit,
       tagId,
     };
 
