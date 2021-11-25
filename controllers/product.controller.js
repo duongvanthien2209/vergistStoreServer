@@ -77,12 +77,12 @@ exports.getAll = async (req, res, next) => {
       };
     }
 
-    if (q) {
-      queryObj = {
-        ...queryObj,
-        $text: { $search: q },
-      };
-    }
+    // if (q) {
+    //   queryObj = {
+    //     ...queryObj,
+    //     $text: { $search: q },
+    //   };
+    // }
 
     const count = await Product.find({ ...queryObj }).count();
 
