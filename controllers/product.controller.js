@@ -104,16 +104,21 @@ exports.getAll = async (req, res, next) => {
 
     if (q) {
       products = products.filter((item, index) => {
-        // const index =
-        return true;
+        const currentIndex = item._doc.name
+          .toLowerCase()
+          .indexOf(q.toLowerCase());
+        return currentIndex > -1;
       });
+      count = products.length;
     }
 
-    products = products.map((item) => {
-      item._doc.categoryId._doc.id = item._doc.categoryId._id;
-      item._doc.tagId._doc.id = item._doc.tagId._id;
-      return item;
-    });
+    products = products
+      .slice((_page - 1) * _limit, (_page - 1) * _limit + _limit)
+      .map((item) => {
+        item._doc.categoryId._doc.id = item._doc.categoryId._id;
+        item._doc.tagId._doc.id = item._doc.tagId._id;
+        return item;
+      });
 
     return Response.success(res, {
       // Add propertype id for db
