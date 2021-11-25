@@ -90,7 +90,7 @@ exports.getAll = async (req, res, next) => {
       products = await Product.find({ ...queryObj })
         .populate(["categoryId", "tagId"])
         .sort({
-          [sort]: _order === "asc" ? 1 : -1,
+          [_sort]: _order === "asc" ? 1 : -1,
         });
     // .skip((_page - 1) * _limit)
     // .limit(_limit);
@@ -345,7 +345,7 @@ exports.updateProduct = async (req, res, next) => {
         // sale: parseFloat(sale),
         // // rate: parseInt(rate),
         // size,
-        // tagId,
+        // tagId,99999999999
         // shortDes,
         // des,
         ...obj,
