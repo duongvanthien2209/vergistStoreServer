@@ -18,6 +18,7 @@ const {
   },
 } = require("../constants");
 
+// Search bằng tên người đặt - mã sản phẩm
 exports.getAll = async (req, res, next) => {
   try {
     let {
@@ -29,13 +30,37 @@ exports.getAll = async (req, res, next) => {
 
     let obj = {};
 
-    // if(q)
+    if (status) obj = { status };
 
-    const total = await Bill.find().count();
-    const bills = await Bill.find()
-      .populate("userId")
-      .skip((_page - 1) * _limit)
-      .limit(_limit);
+    let total = await Bill.find(obj).count();
+    let bills = await Bill.find(obj).populate("userId");
+    // .skip((_page - 1) * _limit)
+    // .limit(_limit);
+
+    if (q) {
+      // Filter by Username
+      let bills1 = bills.filter((item) => {
+        const index = item._doc.userId._doc.fullName
+          .toLowerCase()
+          .indexOf(q.toLowerCase());
+        return index > -1;
+      });
+      let bills2 = bills.filter((item) => {
+        const index = item.id.toLowerCase().indexOf(q.toLowerCase());
+        return index > -1;
+      });
+
+      let totalBills = bills1.concat(bills2);
+
+      bills = totalBills.filter((item, index) => {
+        for (let i = index + 1; i < totalBills.length; i++) {
+          if (item._doc._id === totalBills[i]._doc._id) return false;
+        }
+        return true;
+      });
+      total = bills.length;
+      bills = bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit);
+    }
 
     Response.success(res, { bills: remove_Id(bills), total });
   } catch (error) {
@@ -48,7 +73,7 @@ exports.getAllByUser = async (req, res, next) => {
   try {
     let {
       params: { userId },
-      query: { _limit, _page },
+      query: { _limit, _page, status, q },
       user,
     } = req;
 
@@ -60,13 +85,31 @@ exports.getAllByUser = async (req, res, next) => {
     if (!user) user = await User.findById(userId);
     if (!user) throw new Error(failMessage);
 
-    const total = await Bill.find({ userId }).count();
-    const bills = await Bill.find({ userId })
-      .skip((_page - 1) * _limit)
-      .limit(_limit);
+    let obj = { userId };
+
+    if (status) obj = { ...obj, status };
+
+    let total = await Bill.find({ userId }).count();
+    let bills = await Bill.find({ userId }).populate("userId");
+    // .skip((_page - 1) * _limit)
+    // .limit(_limit);
+
+    if (q) {
+      bills = bills.filter((item) => {
+        const index = item.id.toLowerCase().indexOf(q.toLowerCase());
+        return index > -1;
+      });
+      total = bills.length;
+    }
+
     if (!bills) throw new Error(failMessage);
 
-    Response.success(res, { bills: remove_Id(bills), total });
+    Response.success(res, {
+      bills: remove_Id(
+        bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit)
+      ),
+      total,
+    });
   } catch (error) {
     return next(error);
   }
