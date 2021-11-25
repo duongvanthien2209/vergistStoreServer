@@ -36,9 +36,13 @@ const ProductSchema = new mongoose.Schema({
   rate: {
     type: Number,
     required: true,
-    default: 0,
+    default: 5,
   },
-  size: {
+  // size: {
+  //   type: String,
+  // },
+  // Đơn vị tính
+  unit: {
     type: String,
   },
   categoryId: {
