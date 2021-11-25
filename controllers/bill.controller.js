@@ -30,7 +30,7 @@ exports.getAll = async (req, res, next) => {
 
     let obj = {};
 
-    if (status) obj = { status };
+    if (status && status !== "null") obj = { status };
 
     let total = await Bill.find(obj).count();
     let bills = await Bill.find(obj).populate("userId");
@@ -87,7 +87,7 @@ exports.getAllByUser = async (req, res, next) => {
 
     let obj = { userId };
 
-    if (status) obj = { ...obj, status };
+    if (status && status !== "null") obj = { ...obj, status };
 
     let total = await Bill.find({ userId }).count();
     let bills = await Bill.find({ userId }).populate("userId");
