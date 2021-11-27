@@ -12,12 +12,19 @@ const {
     failMessage,
   },
 } = require("../constants");
+const Product = require("../models/Product");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const categories = await Category.find();
+    let categories = await Category.find();
     if (!categories) throw new Error(failMessage);
     const count = await Category.find().count();
+
+    for (let category of categories) {
+      const total = await Product.find({ categoryId: category._id }).count();
+      category._doc.totalProducts = total;
+    }
+
     return Response.success(res, {
       categories: remove_Id(categories),
       total: count,

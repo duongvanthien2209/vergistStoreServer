@@ -14,6 +14,7 @@ const {
   },
 } = require("../../constants");
 
+// Bỏ API tạo giỏ hàng -> tích hợp vô trong lúc gọi sản phẩm của giỏ hàng luôn
 exports.getAll = async (req, res, next) => {
   try {
     let {
@@ -25,16 +26,20 @@ exports.getAll = async (req, res, next) => {
     _limit = parseInt(_limit) || constant._limit;
 
     if (!user) throw new Error(failMessage);
-    const cart = await Cart.findOne({ userId: user._id });
-    if (!cart) throw new Error(failMessage);
-    const total = await CartDetail.find({ cartId: cart._id }).count();
-    const cartDetails = await CartDetail.find({ cartId: cart._id })
-      .populate("productId")
-      .skip((_page - 1) * _limit)
-      .limit(_limit);
-    if (!cartDetails) throw new Error(failMessage);
+    let cart = await Cart.findOne({ userId: user._id });
+    let total = 0;
+    let cartDetails = [];
+    if (!cart) {
+      cart = await Cart.create({ userId: user._id });
+    } else {
+      total = await CartDetail.find({ cartId: cart._id }).count();
+      cartDetails = await CartDetail.find({ cartId: cart._id })
+        .populate("productId")
+        .skip((_page - 1) * _limit)
+        .limit(_limit);
+    }
 
-    return Response.success(res, { cartDetails, total });
+    return Response.success(res, { cart, cartDetails, total });
   } catch (error) {
     return next(error);
   }
