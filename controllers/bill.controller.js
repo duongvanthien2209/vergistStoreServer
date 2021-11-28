@@ -247,7 +247,7 @@ exports.updateStatus = async (req, res, next) => {
       user,
     } = req;
 
-    if (!billId || !status) throw new Error(failMessage);
+    if (!billId) throw new Error(failMessage);
 
     let bill = await Bill.findById(billId);
     if (!bill) throw new Error(failMessage);
@@ -276,9 +276,9 @@ exports.updateStatus = async (req, res, next) => {
 
     if (isCompleted === "true" || isCompleted === "false") {
       if (bill.payment === "Trực tiếp") {
-        if (status !== "Đã giao hàng")
+        if (bill.status !== "Đã giao hàng")
           throw new Error(
-            "Bạn chỉ có thể thay đổi trạng thái khi đơn hàng đã được giao với hình thanh toán trực tiếp"
+            "Bạn chỉ có thể thay đổi trạng thái khi đơn hàng đã được giao với hình thức thanh toán trực tiếp"
           );
         else
           await Bill.findByIdAndUpdate(bill._id, {

@@ -35,11 +35,11 @@ exports.create = async (req, res, next) => {
     });
 
     if (cartDetail) {
-      cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
+      await CartDetail.findByIdAndUpdate(cartDetail._id, {
         quantity: cartDetail.quantity + parseInt(quantity),
       });
     } else {
-      cartDetail = await CartDetail.create({
+      await CartDetail.create({
         quantity: parseInt(quantity),
         productId,
         cartId: cart._id,
@@ -64,16 +64,22 @@ exports.update = async (req, res, next) => {
     } = req;
 
     if (!cartDetailId || !quantity || !productId) throw new Error(failMessage);
-    let cartDetail = await CartDetail.findById(cartDetailId);
+    let cartDetail = await CartDetail.findById(cartDetailId).populate(
+      "productId"
+    );
     if (!cartDetail) throw new Error(failMessage);
-
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
-
-    cartDetail = await CartDetail.findByIdAndUpdate(cartDetailId, {
-      quantity: parseInt(quantity),
-      productId,
-    });
+    if (cartDetail.productId.id === product.id)
+      await CartDetail.findByIdAndUpdate(cartDetailId, {
+        quantity: parseInt(quantity) + cartDetail.quantity,
+      });
+    else
+      await CartDetail.findByIdAndUpdate(cartDetailId, {
+        quantity: parseInt(quantity),
+        productId,
+      });
+    cartDetail = await CartDetail.findById(cartDetailId).populate("productId");
     cartDetail._doc.id = cartDetail._id;
 
     return Response.success(res, { message: updateSuccessMessage, cartDetail });
