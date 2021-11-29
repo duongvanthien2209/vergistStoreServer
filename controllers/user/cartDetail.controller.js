@@ -15,35 +15,42 @@ const {
 const Cart = require("../../models/Cart");
 
 exports.create = async (req, res, next) => {
+  const {
+    body: { quantity, productId },
+    user,
+  } = req;
   try {
-    const {
-      body: { quantity, productId },
-      user,
-    } = req;
-
     if (!user || !quantity || !productId) throw new Error(failMessage);
-
-    const cart = await Cart.findOne({ userId: user._id });
-    if (!cart) throw new Error(failMessage);
 
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
 
-    let cartDetail = await CartDetail.findOne({
-      cartId: cart._id,
-      productId: product._id,
-    });
-
-    if (cartDetail) {
-      await CartDetail.findByIdAndUpdate(cartDetail._id, {
-        quantity: cartDetail.quantity + parseInt(quantity),
-      });
-    } else {
-      await CartDetail.create({
+    let cart = await Cart.findOne({ userId: user._id });
+    let cartDetail;
+    if (!cart) {
+      cart = await Cart.create({ userId: user._id });
+      cartDetail = await CartDetail.create({
         quantity: parseInt(quantity),
         productId,
         cartId: cart._id,
       });
+    } else {
+      cartDetail = await CartDetail.findOne({
+        cartId: cart._id,
+        productId: product._id,
+      });
+
+      if (cartDetail) {
+        cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
+          quantity: cartDetail.quantity + parseInt(quantity),
+        });
+      } else {
+        cartDetail = await CartDetail.create({
+          quantity: parseInt(quantity),
+          productId,
+          cartId: cart._id,
+        });
+      }
     }
     cartDetail = await CartDetail.findById(cartDetail._id).populate(
       "productId"

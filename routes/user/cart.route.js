@@ -16,7 +16,8 @@ router.get("/", getAll);
 // @route   POST api/user/cart
 // @desc    Add to cart
 // @access  Private
-router.post("/", create);
+// Bỏ
+// router.post("/", create);
 
 // // @route   PATCH api/user/cart/:cartId
 // // @desc    Update to cart

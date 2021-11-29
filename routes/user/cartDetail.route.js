@@ -8,7 +8,7 @@ const {
 } = require("../../controllers/user/cartDetail.controller");
 
 // @route   POST api/user/cartDetail
-// @desc    Create CartDetail
+// @desc    Create CartDetail - Create Cart if empty
 // @access  Private
 router.post("/", create);
 
