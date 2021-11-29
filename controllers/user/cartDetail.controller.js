@@ -40,15 +40,15 @@ exports.create = async (req, res, next) => {
         productId: product._id,
       });
 
-      if (cartDetail) {
-        cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
-          quantity: cartDetail.quantity + parseInt(quantity),
-        });
-      } else {
+      if (!cartDetail) {
         cartDetail = await CartDetail.create({
           quantity: parseInt(quantity),
           productId,
           cartId: cart._id,
+        });
+      } else {
+        cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
+          quantity: cartDetail.quantity + parseInt(quantity),
         });
       }
     }
