@@ -3,6 +3,7 @@ const Product = require("../../models/Product");
 
 const Response = require("../../helpers/response.helper");
 const constant = require("../../constants/index");
+const remove_Id = require("../../utils/remove_Id");
 
 const {
   response: {
@@ -52,12 +53,19 @@ exports.create = async (req, res, next) => {
         });
       }
     }
-    cartDetail = await CartDetail.findById(cartDetail._id).populate(
+    // cartDetail = await CartDetail.findById(cartDetail._id).populate(
+    //   "productId"
+    // );
+    // cartDetail._doc.id = cartDetail._id;
+    const cartDetails = await CartDetail.find({ cartId: cart._id }).populate(
       "productId"
     );
-    cartDetail._doc.id = cartDetail._id;
+    if (!cartDetails) throw new Error(failMessage);
 
-    return Response.success(res, { message: createSuccessMessage, cartDetail });
+    return Response.success(res, {
+      message: createSuccessMessage,
+      cartDetails: remove_Id(cartDetails),
+    });
   } catch (error) {
     return next(error);
   }
