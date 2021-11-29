@@ -64,21 +64,18 @@ exports.update = async (req, res, next) => {
     } = req;
 
     if (!cartDetailId || !quantity || !productId) throw new Error(failMessage);
-    let cartDetail = await CartDetail.findById(cartDetailId).populate(
-      "productId"
-    );
+
+    let cartDetail = await CartDetail.findById(cartDetailId);
     if (!cartDetail) throw new Error(failMessage);
+
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
-    if (cartDetail.productId.id === product.id)
-      await CartDetail.findByIdAndUpdate(cartDetailId, {
-        quantity: parseInt(quantity) + cartDetail.quantity,
-      });
-    else
-      await CartDetail.findByIdAndUpdate(cartDetailId, {
-        quantity: parseInt(quantity),
-        productId,
-      });
+
+    await CartDetail.findByIdAndUpdate(cartDetailId, {
+      quantity: parseInt(quantity),
+      productId,
+    });
+
     cartDetail = await CartDetail.findById(cartDetailId).populate("productId");
     cartDetail._doc.id = cartDetail._id;
 
