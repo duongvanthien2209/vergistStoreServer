@@ -62,6 +62,15 @@ exports.getAll = async (req, res, next) => {
       bills = bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit);
     }
 
+    // Get BillDetails foreach Bill
+    for (let bill of bills) {
+      const billDetails = await BillDetail.find({ billId: bill._id }).populate(
+        "productId"
+      );
+      if (!billDetails) throw new Error(failMessage);
+      bill._doc.billDetails = remove_Id(billDetails);
+    }
+
     Response.success(res, { bills: remove_Id(bills), total });
   } catch (error) {
     return next(error);
@@ -103,11 +112,19 @@ exports.getAllByUser = async (req, res, next) => {
     }
 
     if (!bills) throw new Error(failMessage);
+    bills = bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit);
+
+    // Get BillDetails foreach Bill
+    for (let bill of bills) {
+      const billDetails = await BillDetail.find({ billId: bill._id }).populate(
+        "productId"
+      );
+      if (!billDetails) throw new Error(failMessage);
+      bill._doc.billDetails = remove_Id(billDetails);
+    }
 
     Response.success(res, {
-      bills: remove_Id(
-        bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit)
-      ),
+      bills: remove_Id(bills),
       total,
     });
   } catch (error) {
