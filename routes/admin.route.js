@@ -5,6 +5,10 @@ const { protect } = require("../middlewares/admin/auth");
 
 const handleError = require("../helpers/handleError.helper");
 
+// User
+router.use("/user", require("./admin/user.route"));
+router.use(handleError);
+
 // Category
 router.use("/Category", require("./admin/category.route"));
 router.use(handleError);
