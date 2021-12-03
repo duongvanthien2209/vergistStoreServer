@@ -6,7 +6,11 @@ const router = express.Router();
 const { protect } = require("../../middlewares/user/auth");
 const upload = multer({ dest: "public/uploads/products" });
 
-const { login, register } = require("../../controllers/user/auth.controller");
+const {
+  login,
+  register,
+  getMe,
+} = require("../../controllers/user/auth.controller");
 const {
   update,
   updatePassword,
@@ -24,6 +28,11 @@ router.post("/login", login);
 router.post("/register", register);
 
 router.use(protect);
+
+// @route   GET api/user/auth
+// @desc    Lấy thông tin chính chủ
+// @access  Private
+router.get("/", getMe);
 
 // @route   PATCH api/user/auth
 // @desc    Cập nhật thông tin người dùng

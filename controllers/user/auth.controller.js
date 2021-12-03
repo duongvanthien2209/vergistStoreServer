@@ -115,3 +115,16 @@ exports.register = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.getMe = async (req, res, next) => {
+  try {
+    const { user } = req;
+
+    if (!user) throw new Error(failMessage);
+    user._doc.id = user._id;
+
+    return Response.success(res, { user });
+  } catch (error) {
+    return next(error);
+  }
+};
