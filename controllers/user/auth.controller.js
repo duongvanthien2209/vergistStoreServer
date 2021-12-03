@@ -4,6 +4,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 
 const Response = require("../../helpers/response.helper");
+const {
+  response: {
+    createSuccessMessage,
+    updateSuccessMessage,
+    deleteSuccessMessage,
+    failMessage,
+  },
+} = require("../../constants");
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -59,8 +67,7 @@ exports.register = async (req, res, next) => {
   const {
     firstName,
     lastName,
-    fullName,
-    phoneNumber,
+    // phoneNumber,
     // address,
     // birthday,
     // avatar,
@@ -70,6 +77,9 @@ exports.register = async (req, res, next) => {
   } = req.body;
 
   try {
+    if (!firstName || !lastName || !email || !password)
+      throw new Error(failMessage);
+
     let user = await User.findOne({ email });
 
     if (user) {
