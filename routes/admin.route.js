@@ -5,6 +5,10 @@ const { protect } = require("../middlewares/admin/auth");
 
 const handleError = require("../helpers/handleError.helper");
 
+// Review
+router.use("/review", require("./admin/review.route"));
+router.use(handleError);
+
 // Category
 router.use("/Category", require("./admin/category.route"));
 router.use(handleError);
@@ -15,6 +19,8 @@ router.use(handleError);
 
 // Tags
 router.use("/tags", require("./admin/tag.route"));
+router.use(handleError);
+
 // Bill
 router.use("/bill", require("./admin/bill.route"));
 router.use(handleError);
