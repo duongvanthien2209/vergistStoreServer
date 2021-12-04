@@ -38,6 +38,10 @@ router.use(handleError);
 // Change newPrice to Price for Products
 router.get("/updatePrice", changeImageToProduct);
 
+// Reviews
+router.use("/review", require("./user/review.route"));
+router.use(handleError);
+
 // Protected
 router.use(protect);
 
