@@ -67,12 +67,13 @@ exports.getByProduct = async (req, res, next) => {
     if (!product) throw new Error(failMessage);
 
     const total = await Review.find({ productId }).count();
-    let reviews = await Review.find({ productId })
+    let reviews = [];
+    reviews = await Review.find({ productId })
       .sort({ dateCreate: -1 })
       .populate("userId")
       .skip((_page - 1) * _limit)
       .limit(_limit);
-    if (!reviews || !total) throw new Error(failMessage);
+    // if (reviews.length === 0 || !total) throw new Error(failMessage);
 
     return Response.success(res, { reviews: remove_Id(reviews), total });
   } catch (error) {
@@ -90,7 +91,7 @@ exports.create = async (req, res, next) => {
   try {
     rate = parseInt(rate) || 5;
 
-    if (!productId || !title || !description || !user)
+    if (!productId || !title || !description || !user || !dateCreate)
       throw new Error(failMessage);
 
     const product = await Product.findById(productId);
