@@ -83,7 +83,7 @@ exports.getByProduct = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   let {
     params: { productId },
-    body: { rate, title, description },
+    body: { rate, title, description, dateCreate },
     user,
   } = req;
 
@@ -102,6 +102,7 @@ exports.create = async (req, res, next) => {
       description,
       userId: user._id,
       productId,
+      dateCreate: new Date(dateCreate),
     });
 
     // Cập nhật lại đánh giá cho sản phẩm
