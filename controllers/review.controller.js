@@ -69,7 +69,7 @@ exports.getByProduct = async (req, res, next) => {
     const total = await Review.find({ productId }).count();
     let reviews = [];
     reviews = await Review.find({ productId })
-      .sort({ dateCreate: -1 })
+      .sort({ dateCreate: 1 })
       .populate("userId")
       .skip((_page - 1) * _limit)
       .limit(_limit);
@@ -96,6 +96,9 @@ exports.create = async (req, res, next) => {
 
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
+
+    // Người dùng phải có đặt sản phẩm thì mới được đánh giá
+    
 
     let review = await Review.create({
       rate,

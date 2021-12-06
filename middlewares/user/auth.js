@@ -10,7 +10,9 @@ exports.protect = async (req, res, next) => {
     if (!token) throw new Error("Không tìm thấy token");
     const decode = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
     const user = await User.findById(decode.user.id);
-    if (!user || user.role !== "user") throw new Error("Token không hợp lệ");
+    // Admin - có thể có các quyền của User
+    if (!user) throw new Error("Token không hợp lệ");
+    // if (!user || user.role !== "user") throw new Error("Token không hợp lệ");
     req.user = user;
 
     return next();

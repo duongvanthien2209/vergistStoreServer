@@ -256,6 +256,8 @@ exports.updateBillDetail = async (req, res, next) => {
 };
 
 // User chỉ có quyền hủy đơn hàng, Amin có quyền cập nhật các trạng thái khác
+// - Admin có thể hủy đơn hàng -> người dùng hủy đơn hàng chính chủ
+// Đợi xác nhận, Đã xác nhận, Đang vận chuyển, Đã giao hàng, Đã hủy
 exports.updateStatus = async (req, res, next) => {
   try {
     const {
