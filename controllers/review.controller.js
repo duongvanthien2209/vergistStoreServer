@@ -35,6 +35,7 @@ const productIsContainInBill = async (userId, productId) => {
   }
 };
 
+// Tìm kiếm bằng title, description, productName, userName
 exports.getAll = async (req, res, next) => {
   let {
     query: { _page, _limit, q },
@@ -46,19 +47,30 @@ exports.getAll = async (req, res, next) => {
 
     let reviews = await Review.find()
       .sort({ dateCreate: -1 })
-      .populate("userId");
+      .populate("userId")
+      .populate("productId");
     let total = await Review.find().count();
     if (q) {
       reviews = reviews.filter((item, index) => {
-        const currentIndex = item._doc.title
+        const currentIndex = item.title.toLowerCase().indexOf(q.toLowerCase());
+        const currentIndex1 = item.description
           .toLowerCase()
           .indexOf(q.toLowerCase());
-        const currentIndex1 = item._doc.description
+        const currentIndex2 = item.userId.fullName
+          .toLowerCase()
+          .indexOf(q.toLowerCase());
+        const currentIndex3 = item.productId.name
           .toLowerCase()
           .indexOf(q.toLowerCase());
 
-        return currentIndex > -1 || currentIndex1 > -1;
+        return (
+          currentIndex > -1 ||
+          currentIndex1 > -1 ||
+          currentIndex2 > -1 ||
+          currentIndex3 > -1
+        );
       });
+
       total = reviews.length;
     }
 
