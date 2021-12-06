@@ -12,7 +12,28 @@ const {
     failMessage,
   },
 } = require("../constants");
+
 const Product = require("../models/Product");
+const Bill = require("../models/Bill");
+const BillDetail = require("../models/BillDetail");
+
+// Kiểm tra người dùng có từng đặt sản phẩm chưa
+const productIsContainInBill = async (userId, productId) => {
+  try {
+    const bills = await Bill.find({ userId, status: "Đã giao hàng" });
+    for (const bill of bills) {
+      const billDetail = await BillDetail.findOne({
+        billId: bill._id,
+        productId,
+      });
+      if (billDetail) return true;
+    }
+
+    return false;
+  } catch (error) {
+    return next(error);
+  }
+};
 
 exports.getAll = async (req, res, next) => {
   let {
@@ -97,8 +118,10 @@ exports.create = async (req, res, next) => {
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
 
-    // Người dùng phải có đặt sản phẩm thì mới được đánh giá
-    
+    if (!(await productIsContainInBill(user._id, product._id)))
+      throw new Error(
+        "Bạn không có quyền review sản phẩm khi chưa mua sản phẩm"
+      );
 
     let review = await Review.create({
       rate,
