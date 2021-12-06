@@ -203,7 +203,9 @@ exports.delete = async (req, res, next) => {
 
     let review = await Review.findById(reviewId);
     if (!review) throw new Error(failMessage);
+    // Chưa bỏ auth admin
     if (
+      user &&
       user.role === "user" &&
       review.userId.toString() !== user._id.toString()
     )
