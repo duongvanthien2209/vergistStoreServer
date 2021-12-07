@@ -59,8 +59,9 @@ exports.getAll = async (req, res, next) => {
         return true;
       });
       total = bills.length;
-      bills = bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit);
     }
+
+    bills = bills.slice((_page - 1) * _limit, (_page - 1) * _limit + _limit);
 
     // Get BillDetails foreach Bill
     for (let bill of bills) {

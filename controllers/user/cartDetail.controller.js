@@ -28,6 +28,7 @@ exports.create = async (req, res, next) => {
 
     let cart = await Cart.findOne({ userId: user._id });
     let cartDetail;
+    // Số lượng lớn hơn 20 -> cộng dồn
     if (!cart) {
       cart = await Cart.create({ userId: user._id });
       cartDetail = await CartDetail.create({
