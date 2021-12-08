@@ -228,11 +228,15 @@ exports.updatePasswordConfirm = async (req, res, next) => {
 exports.updateStatus = async (req, res, next) => {
   const {
     params: { userId },
-    body: { status },
+    body: { status, role },
   } = req;
 
   try {
-    if (!userId || (status !== "blocked" && status !== "activated"))
+    if (
+      !userId ||
+      (status !== "blocked" && status !== "activated") ||
+      (role !== "admin" && role !== "user")
+    )
       throw new Error(failMessage);
 
     let user = await User.findById(userId);
@@ -241,7 +245,11 @@ exports.updateStatus = async (req, res, next) => {
     if (user.status && user.status === status)
       throw new Error("Bạn đang cập nhật lại trạng thái hiện tại");
 
-    await User.findByIdAndUpdate(userId, { status });
+    if (!role) await User.findByIdAndUpdate(userId, { status });
+    else if (role && role !== "admin" && role !== "user")
+      throw new Error(failMessage);
+    else await User.findByIdAndUpdate(userId, { status, role });
+
     user = await User.findById(userId, { password: 0 });
     user._doc.id = user._id;
 

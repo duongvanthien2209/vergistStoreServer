@@ -55,6 +55,7 @@ const UserSchema = new mongoose.Schema({
   // admin, user
   role: {
     type: String,
+    default: "user",
     required: true,
   },
 
