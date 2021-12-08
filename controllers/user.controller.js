@@ -248,8 +248,11 @@ exports.updateStatus = async (req, res, next) => {
     if (!role) await User.findByIdAndUpdate(userId, { status });
     else if (role && role !== "admin" && role !== "user")
       throw new Error(failMessage);
-    else await User.findByIdAndUpdate(userId, { status, role });
-
+    else {
+      if (user.role && user.role === role)
+        throw new Error("Bạn đang cập nhật lại quyền hiện tại");
+      await User.findByIdAndUpdate(userId, { status, role });
+    }
     user = await User.findById(userId, { password: 0 });
     user._doc.id = user._id;
 
