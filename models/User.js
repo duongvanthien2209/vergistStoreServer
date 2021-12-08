@@ -57,6 +57,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
+  // Activated, Blocked
+  status: {
+    type: String,
+    default: "blocked",
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema, "users");

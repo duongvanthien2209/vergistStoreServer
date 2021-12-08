@@ -25,6 +25,11 @@ exports.login = async (req, res, next) => {
       throw new Error("Email không tồn tại");
     }
 
+    if (user.status && user.status === "blocked")
+      throw new Error(
+        "Rất tiếc tài khoản của bạn hiện đang bị khóa, vì vậy bạn không thể đăng nhập được."
+      );
+
     // Add id
     user._doc.id = user._id;
 
@@ -102,6 +107,7 @@ exports.register = async (req, res, next) => {
       // gender: gender === "Nam",
       email,
       role: "user",
+      status: "activated",
       // birthday: new Date(
       //   parseInt(dateParts[2], 10),
       //   parseInt(dateParts[1], 10) - 1,

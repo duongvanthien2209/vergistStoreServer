@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   getAll,
   getDetail,
+  updateStatus,
   delete: currentDelete,
 } = require("../../controllers/user.controller");
 
@@ -17,6 +18,11 @@ router.get("/", getAll);
 // @desc    Get Detail
 // @access  Private
 router.get("/:userId", getDetail);
+
+// @route   PATCH api/admin/user/:userId
+// @desc    Update Status
+// @access  Private
+router.patch("/:userId", updateStatus);
 
 // @route   DELETE api/admin/user/:userId
 // @desc    Delete

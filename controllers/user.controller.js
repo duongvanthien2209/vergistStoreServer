@@ -120,10 +120,18 @@ exports.update = async (req, res, next) => {
       // lastName,
     };
 
-    if (firstName)
+    let currentFirstName = "";
+    if (firstName) {
       obj = { ...obj, firstName, fullName: `${firstName} ${user.lastName}` };
+      currentFirstName = firstName;
+    }
     if (lastName)
-      obj = { ...obj, lastName, fullName: `${user.firstName} ${lastName}` };
+      obj = {
+        ...obj,
+        lastName,
+        fullName: `${currentFirstName || user.firstName} ${lastName}`,
+      };
+
     if (phoneNumber) obj = { ...obj, phoneNumber };
     if (address) obj = { ...obj, address };
     if (birthday) obj = { ...obj, birthday: new Date(birthday) };
@@ -212,6 +220,32 @@ exports.updatePasswordConfirm = async (req, res, next) => {
 
     await Token.findByIdAndDelete(currentToken._id);
     return Response.success({ user, message: updateSuccessMessage });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.updateStatus = async (req, res, next) => {
+  const {
+    params: { userId },
+    body: { status },
+  } = req;
+
+  try {
+    if (!userId || (status !== "blocked" && status !== "activated"))
+      throw new Error(failMessage);
+
+    let user = await User.findById(userId);
+    if (!user) throw new Error(failMessage);
+
+    if (user.status && user.status === status)
+      throw new Error("Bạn đang cập nhật lại trạng thái hiện tại");
+
+    await User.findByIdAndUpdate(userId, { status });
+    user = await User.findById(userId, { password: 0 });
+    user._doc.id = user._id;
+
+    return Response.success(res, { message: updateSuccessMessage, user });
   } catch (error) {
     return next(error);
   }
