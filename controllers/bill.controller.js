@@ -33,7 +33,9 @@ exports.getAll = async (req, res, next) => {
     if (status && status !== "null") obj = { status };
 
     let total = await Bill.find(obj).count();
-    let bills = await Bill.find(obj).populate("userId");
+    let bills = await Bill.find(obj)
+      .populate("userId")
+      .sort({ dateCreate: -1 });
     // .skip((_page - 1) * _limit)
     // .limit(_limit);
 
@@ -100,7 +102,9 @@ exports.getAllByUser = async (req, res, next) => {
     if (status && status !== "null") obj = { ...obj, status };
 
     let total = await Bill.find({ userId }).count();
-    let bills = await Bill.find({ userId }).populate("userId");
+    let bills = await Bill.find({ userId })
+      .populate("userId")
+      .sort({ dateCreate: -1 });
     // .skip((_page - 1) * _limit)
     // .limit(_limit);
 
