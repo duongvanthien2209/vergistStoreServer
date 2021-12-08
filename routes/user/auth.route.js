@@ -44,9 +44,9 @@ router.patch("/", upload.single("avatar"), update);
 // @access  Private
 router.patch("/updatePassword", updatePassword);
 
-// @route   PATCH api/user/auth/confirmPassword/:token
+// @route   GET api/user/auth/confirmPassword/:token
 // @desc    Xác nhận cập nhật mật khẩu
 // @access  Private
-router.patch("/confirmPassword/:token", updatePasswordConfirm);
+router.get("/confirmPassword/:token", updatePasswordConfirm);
 
 module.exports = router;

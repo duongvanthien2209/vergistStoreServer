@@ -1,8 +1,10 @@
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const Response = require("../helpers/response.helper");
 const remove_Id = require("../utils/remove_Id");
 const constant = require("../constants/index");
+const sendEmail = require("../utils/sendEmail");
 
 const User = require("../models/User");
 const Cart = require("../models/Cart");
@@ -133,7 +135,8 @@ exports.update = async (req, res, next) => {
       obj = { ...obj, avatar: result.url };
     }
 
-    user = await User.findByIdAndUpdate(user._id, { ...obj });
+    await User.findByIdAndUpdate(user._id, { ...obj });
+    user = await User.findById(user._id, { password: 0 });
     user._doc.id = user._id;
 
     return Response.success(res, { message: updateSuccessMessage, user });
@@ -158,6 +161,7 @@ exports.updatePassword = async (req, res, next) => {
     const generatedPass = await bcrypt.hash(newPassword, salt);
 
     // Tạo 1 token -> lưu lại -> gởi email + token -> email gởi lại token hợp lệ -> verified user
+    // Ngày hết hạn -> 24h
     const token = crypto.randomBytes(16).toString("hex");
     await Token.create({
       userId: user._id,
