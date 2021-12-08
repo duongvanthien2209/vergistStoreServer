@@ -101,8 +101,8 @@ exports.getAllByUser = async (req, res, next) => {
 
     if (status && status !== "null") obj = { ...obj, status };
 
-    let total = await Bill.find({ userId }).count();
-    let bills = await Bill.find({ userId })
+    let total = await Bill.find({ ...obj }).count();
+    let bills = await Bill.find({ ...obj })
       .populate("userId")
       .sort({ dateCreate: -1 });
     // .skip((_page - 1) * _limit)
