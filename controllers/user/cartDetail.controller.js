@@ -15,24 +15,29 @@ const {
 } = require("../../constants");
 const Cart = require("../../models/Cart");
 
+// Thêm được tối đa 30 SP
 exports.create = async (req, res, next) => {
-  const {
+  let {
     body: { quantity, productId },
     user,
   } = req;
   try {
     if (!user || !quantity || !productId) throw new Error(failMessage);
+    quantity = parseInt(quantity);
 
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
 
     let cart = await Cart.findOne({ userId: user._id });
     let cartDetail;
-    // Số lượng lớn hơn 20 -> cộng dồn
+
     if (!cart) {
       cart = await Cart.create({ userId: user._id });
+
+      if (quantity > 30) throw new Error("Bạn chỉ mua tối đa 30 SP");
+
       cartDetail = await CartDetail.create({
-        quantity: parseInt(quantity),
+        quantity,
         productId,
         cartId: cart._id,
       });
@@ -43,12 +48,19 @@ exports.create = async (req, res, next) => {
       });
 
       if (!cartDetail) {
+        if (quantity > 30) throw new Error("Bạn chỉ mua tối đa 30 SP");
+
         cartDetail = await CartDetail.create({
-          quantity: parseInt(quantity),
+          quantity,
           productId,
           cartId: cart._id,
         });
       } else {
+        if (cartDetail.quantity + quantity > 30)
+          throw new Error(
+            "Số sản phẩm hiện tại bạn đang có và số sản phẩm thêm vào của bạn hiện vượt quá 30 SP cho phép"
+          );
+
         cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
           quantity: cartDetail.quantity + parseInt(quantity),
         });
@@ -72,25 +84,33 @@ exports.create = async (req, res, next) => {
   }
 };
 
+// Hiện đang có thể cập nhật lại cả Sản phẩm cho 1 CartDetail -> có thể có hoặc ko ProductId
 exports.update = async (req, res, next) => {
   try {
-    const {
+    let {
       params: { cartDetailId },
       body: { quantity, productId },
     } = req;
 
-    if (!cartDetailId || !quantity || !productId) throw new Error(failMessage);
+    if (!cartDetailId || !quantity) throw new Error(failMessage);
+
+    quantity = parseInt(quantity);
+    if (quantity > 30) throw new Error("Bạn chỉ được mua tối đa 30 SP");
 
     let cartDetail = await CartDetail.findById(cartDetailId);
     if (!cartDetail) throw new Error(failMessage);
 
-    const product = await Product.findById(productId);
-    if (!product) throw new Error(failMessage);
-
-    await CartDetail.findByIdAndUpdate(cartDetailId, {
-      quantity: parseInt(quantity),
-      productId,
-    });
+    if (productId) {
+      const product = await Product.findById(productId);
+      if (!product) throw new Error(failMessage);
+      await CartDetail.findByIdAndUpdate(cartDetailId, {
+        quantity,
+        productId,
+      });
+    } else
+      await CartDetail.findByIdAndUpdate(cartDetailId, {
+        quantity,
+      });
 
     cartDetail = await CartDetail.findById(cartDetailId).populate("productId");
     cartDetail._doc.id = cartDetail._id;
