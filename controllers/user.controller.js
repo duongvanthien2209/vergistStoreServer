@@ -36,16 +36,7 @@ exports.getAll = async (req, res, next) => {
     let users = await User.find(
       {},
       {
-        firstName: 1,
-        lastName: 1,
-        fullName: 1,
-        phoneNumber: 1,
-        address: 1,
-        birthday: 1,
-        avatar: 1,
-        gender: 1,
-        email: 1,
-        role: 1,
+        password: 0,
       }
     );
 
@@ -232,27 +223,23 @@ exports.updateStatus = async (req, res, next) => {
   } = req;
 
   try {
-    if (
-      !userId ||
-      (status !== "blocked" && status !== "activated") ||
-      (role !== "admin" && role !== "user")
-    )
-      throw new Error(failMessage);
+    if (!userId) throw new Error(failMessage);
 
     let user = await User.findById(userId);
     if (!user) throw new Error(failMessage);
 
-    if (user.status && user.status === status)
-      throw new Error("Bạn đang cập nhật lại trạng thái hiện tại");
+    if (status && (status === "blocked" || status === "activated")) {
+      if (user.status && user.status === status)
+        throw new Error("Bạn đang cập nhật lại trạng thái hiện tại");
+      else await User.findByIdAndUpdate(userId, { status });
+    }
 
-    if (!role) await User.findByIdAndUpdate(userId, { status });
-    else if (role && role !== "admin" && role !== "user")
-      throw new Error(failMessage);
-    else {
+    if (role && (role === "admin" || role === "user")) {
       if (user.role && user.role === role)
         throw new Error("Bạn đang cập nhật lại quyền hiện tại");
-      await User.findByIdAndUpdate(userId, { status, role });
+      else await User.findByIdAndUpdate(userId, { role });
     }
+
     user = await User.findById(userId, { password: 0 });
     user._doc.id = user._id;
 

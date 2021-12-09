@@ -287,15 +287,20 @@ exports.updateStatus = async (req, res, next) => {
         'Bạn chỉ có thể cập nhật trạng thái "Đã xác nhận" hoặc "Đã hủy"'
       );
 
-    if (bill.status === "Đã xác nhận" && !(status === "Đang vận chuyển"))
-      throw new Error('Bạn chỉ có thể cập nhật trạng thái "Đang vận chuyển"');
+    if (
+      bill.status === "Đã xác nhận" &&
+      !(status === "Đang vận chuyển" || status === "Đã hủy")
+    )
+      throw new Error(
+        'Bạn chỉ có thể cập nhật trạng thái "Đang vận chuyển" hoặc "Đã hủy"'
+      );
 
     if (bill.status === "Đang vận chuyển" && status !== "Đã giao hàng")
       throw new Error('Bạn chỉ có thể cập nhật trạng thái "Đã giao hàng"');
 
-    if (bill.status === "Đã hủy")
+    if (bill.status === "Đã hủy" || bill.status === "Đã giao hàng")
       throw new Error(
-        "Đơn hàng đã hủy, bạn không thể cập nhật trạng thái cho nó"
+        "Đơn hàng đã hủy hoặc đã được giao thành công, bạn không thể cập nhật trạng thái cho nó"
       );
 
     if (isCompleted === "true" || isCompleted === "false") {
@@ -339,7 +344,10 @@ exports.delete = async (req, res, next) => {
     if (!billId) throw new Error(failMessage);
 
     const bill = await Bill.findById(billId);
-    if (!bill) throw new Error(failMessage);
+    if (!bill || !bill.status) throw new Error(failMessage);
+
+    if (!(bill.status === "Đã hủy" || bill.status === "Đã giao hàng"))
+      throw new Error("Bạn không được phép xóa đơn hàng");
 
     const billDetails = await BillDetail.find({ billId: bill._id });
     for (let billDetail of billDetails)
