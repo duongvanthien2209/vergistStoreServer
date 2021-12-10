@@ -5,10 +5,6 @@ const { protect } = require("../middlewares/admin/auth");
 
 const handleError = require("../helpers/handleError.helper");
 
-// User
-router.use("/user", require("./admin/user.route"));
-router.use(handleError);
-
 // Review
 router.use("/review", require("./admin/review.route"));
 router.use(handleError);
@@ -35,6 +31,10 @@ router.use(handleError);
 
 // Middlewares
 router.use(protect);
+
+// User
+router.use("/user", require("./admin/user.route"));
+router.use(handleError);
 
 router.get("/", (req, res) => {
   res.send("Admin");

@@ -26,15 +26,20 @@ const {
 
 // Find Users
 exports.getAll = async (req, res, next) => {
-  let { _limit, _page, q } = req.query;
+  let {
+    query: { _limit, _page, q },
+    admin,
+  } = req;
 
   try {
+    if (!admin) throw new Error(failMessage);
+
     _page = parseInt(_page) || 1;
     _limit = parseInt(_limit) || constant._limit;
 
-    let total = await User.find().count();
+    let total = await User.find({ _id: { $ne: admin._id } }).count();
     let users = await User.find(
-      {},
+      { _id: { $ne: admin._id } },
       {
         password: 0,
       }

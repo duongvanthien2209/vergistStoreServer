@@ -11,8 +11,8 @@ exports.protect = async (req, res, next) => {
     const decode = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
 
     const user = await User.findById(decode.user.id);
-    if (!user && user.role !== "admin") throw new Error("Token không hợp lệ");
-    req.user = user;
+    if (!user || user.role !== "admin") throw new Error("Token không hợp lệ");
+    req.admin = user;
 
     return next();
   } catch (error) {
