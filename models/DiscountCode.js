@@ -18,6 +18,13 @@ const DiscountCodeSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  // Số lượng mã giảm giá đã lấy
+  takenTotal: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  // Tính theo phần trăm
   sale: {
     type: Number,
     required: true,
