@@ -101,7 +101,7 @@ exports.register = async (req, res, next) => {
       firstName,
       lastName,
       fullName: `${firstName} ${lastName}`,
-      phoneNumber,
+      // phoneNumber,
       // address,
       password: generatedPass,
       // gender: gender === "Nam",
