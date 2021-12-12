@@ -27,6 +27,11 @@ router.post("/login", login);
 // @access  Public
 router.post("/register", register);
 
+// @route   GET api/user/auth/confirmPassword/:token
+// @desc    Xác nhận cập nhật mật khẩu
+// @access  Private
+router.get("/confirmation/:token", updatePasswordConfirm);
+
 router.use(protect);
 
 // @route   GET api/user/auth
@@ -43,10 +48,5 @@ router.patch("/", upload.single("avatar"), update);
 // @desc    Cập nhật mật khẩu
 // @access  Private
 router.patch("/updatePassword", updatePassword);
-
-// @route   GET api/user/auth/confirmPassword/:token
-// @desc    Xác nhận cập nhật mật khẩu
-// @access  Private
-router.get("/confirmPassword/:token", updatePasswordConfirm);
 
 module.exports = router;

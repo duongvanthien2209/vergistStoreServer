@@ -14,6 +14,7 @@ const BillDetail = require("../models/BillDetail");
 const Token = require("../models/Token");
 
 const uploadImage = require("../utils/uploadImage");
+const { protect } = require("../middlewares/admin/auth");
 
 const {
   response: {
@@ -170,7 +171,7 @@ exports.updatePassword = async (req, res, next) => {
     await Token.create({
       userId: user._id,
       newPassword: generatedPass,
-      token: crypto.createHash("sha256").update(token).digest("hex"),
+      token,
       tokenExpire: Date.now() + 24 * 60 * 60 * 1000,
     });
 
@@ -205,7 +206,7 @@ exports.updatePasswordConfirm = async (req, res, next) => {
     if (!token) throw new Error(failMessage);
 
     const currentToken = await Token.findOne({ token });
-    if (!currentToken && Date.now() > currentToken.tokenExpire)
+    if (!currentToken || Date.now() > currentToken.tokenExpire)
       throw new Error(failMessage);
 
     const user = await User.findByIdAndUpdate(currentToken.userId, {
@@ -215,7 +216,7 @@ exports.updatePasswordConfirm = async (req, res, next) => {
     user._doc.id = user._id;
 
     await Token.findByIdAndDelete(currentToken._id);
-    return Response.success({ user, message: updateSuccessMessage });
+    return Response.success(res, { user, message: updateSuccessMessage });
   } catch (error) {
     return next(error);
   }
