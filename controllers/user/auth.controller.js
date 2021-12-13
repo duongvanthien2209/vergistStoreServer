@@ -14,15 +14,15 @@ const {
 } = require("../../constants");
 
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { phoneNumber, password } = req.body;
 
   // console.log(req.body);
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ phoneNumber });
 
     if (!user) {
-      throw new Error("Email không tồn tại");
+      throw new Error("Số điện thoại chưa có người đăng ký");
     }
 
     if (user.status && user.status === "blocked")
