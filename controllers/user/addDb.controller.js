@@ -151,3 +151,11 @@ exports.changeImageToProduct = async (req, res, next) => {
     return next(error);
   }
 };
+
+exports.addTotalToProduct = async (req, res, next) => {
+  try {
+    const products = await Product.find();
+  } catch (error) {
+    return next(error);
+  }
+};

@@ -38,9 +38,12 @@ const ProductSchema = new mongoose.Schema({
     required: true,
     default: 5,
   },
-  // size: {
-  //   type: String,
-  // },
+  // Tổng sản phẩm trong kho
+  total: {
+    type: Number,
+    required: 0,
+    default: 0,
+  },
   // Đơn vị tính
   unit: {
     type: String,

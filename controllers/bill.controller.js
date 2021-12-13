@@ -191,6 +191,7 @@ exports.create = async (req, res, next) => {
       name,
       address,
       phoneNumber,
+      // total: parseFloat(currentTotal),
     });
     let total = 0;
     for (let cartDetail of cartDetails) {
@@ -208,7 +209,9 @@ exports.create = async (req, res, next) => {
     }
     await Cart.findByIdAndDelete(cart._id);
 
-    bill = await Bill.findByIdAndUpdate(bill._id, { total });
+    bill = await Bill.findByIdAndUpdate(bill._id, {
+      total: total + 20000,
+    });
     bill._doc.id = bill._id;
 
     return Response.success(res, { message: createSuccessMessage, bill });
