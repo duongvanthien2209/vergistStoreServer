@@ -72,23 +72,23 @@ exports.register = async (req, res, next) => {
   const {
     firstName,
     lastName,
-    // phoneNumber,
+    phoneNumber,
     // address,
     // birthday,
     // avatar,
     // gender,
-    email,
+    // email,
     password,
   } = req.body;
 
   try {
-    if (!firstName || !lastName || !email || !password)
+    if (!firstName || !lastName || !phoneNumber || !password)
       throw new Error(failMessage);
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ phoneNumber });
 
     if (user) {
-      throw new Error("Email đã tồn tại");
+      throw new Error("Số điện thoại đã được dùng");
     } else user = null;
 
     // const dateParts = birthday.split("/");
@@ -101,11 +101,11 @@ exports.register = async (req, res, next) => {
       firstName,
       lastName,
       fullName: `${firstName} ${lastName}`,
-      // phoneNumber,
+      phoneNumber,
       // address,
       password: generatedPass,
       // gender: gender === "Nam",
-      email,
+      // email,
       role: "user",
       status: "activated",
       // birthday: new Date(

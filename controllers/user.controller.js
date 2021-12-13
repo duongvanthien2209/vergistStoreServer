@@ -97,7 +97,7 @@ exports.getDetail = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   let {
     file,
-    body: { firstName, lastName, phoneNumber, address, birthday, gender },
+    body: { firstName, lastName, address, birthday, gender, email },
     user,
   } = req;
   try {
@@ -129,7 +129,12 @@ exports.update = async (req, res, next) => {
         fullName: `${currentFirstName || user.firstName} ${lastName}`,
       };
 
-    if (phoneNumber) obj = { ...obj, phoneNumber };
+    // if (phoneNumber) obj = { ...obj, phoneNumber };
+    if (email) {
+      const currentUser = await User.findOne({ email });
+      if (currentUser) throw new Error("Email đã có người sử dụng");
+      obj = { ...obj, email };
+    }
     if (address) obj = { ...obj, address };
     if (birthday) obj = { ...obj, birthday: new Date(birthday) };
     if (gender === "true" || gender === "false")

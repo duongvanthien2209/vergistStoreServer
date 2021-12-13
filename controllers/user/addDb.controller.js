@@ -155,6 +155,12 @@ exports.changeImageToProduct = async (req, res, next) => {
 exports.addTotalToProduct = async (req, res, next) => {
   try {
     const products = await Product.find();
+
+    for (let product of products) {
+      await Product.findByIdAndUpdate(product._id, { total: 100 });
+    }
+
+    return Response.success(res, { message: "Cập nhật thành công" });
   } catch (error) {
     return next(error);
   }
