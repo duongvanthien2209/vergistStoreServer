@@ -22,7 +22,7 @@ exports.login = async (req, res, next) => {
     const user = await User.findOne({ phoneNumber });
 
     if (!user) {
-      throw new Error("Số điện thoại chưa có người đăng ký");
+      throw new Error("Số điện thoại không tồn tại");
     }
 
     if (user.status && user.status === "blocked")
@@ -88,7 +88,7 @@ exports.register = async (req, res, next) => {
     let user = await User.findOne({ phoneNumber });
 
     if (user) {
-      throw new Error("Số điện thoại đã được dùng");
+      throw new Error("Số điện thoại đã tồn tại");
     } else user = null;
 
     // const dateParts = birthday.split("/");
