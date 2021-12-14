@@ -7,7 +7,7 @@ const BillSchema = new mongoose.Schema({
     default: 0,
   },
   dateCreate: {
-    type: Date,
+    type: String,
     default: Date.now(),
     required: true,
   },

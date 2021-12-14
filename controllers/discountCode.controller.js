@@ -12,7 +12,61 @@ const {
     failMessage,
   },
 } = require("../constants");
+const DiscountCodeDetail = require("../models/DiscountCodeDetail");
 const existCodeMessage = "Mã code đã tồn tại";
+
+exports.getAll = async (req, res, next) => {
+  try {
+    let {
+      query: { _limit, _page, q },
+    } = req;
+
+    _page = parseInt(_page) || 1;
+    _limit = parseInt(_limit) || constant._limit;
+
+    let total = await DiscountCode.find().count();
+    let discountCodes = await DiscountCode.find().sort({ dateCreate: 1 });
+
+    if (q) {
+      discountCodes = discountCodes.filter((item) => {
+        const index = item.codeName.toLowerCase().indexOf(q.toLowerCase());
+        const index1 = item.title.toLowerCase().indexOf(q.toLowerCase());
+        const index2 = item.description.toLowerCase().indexOf(q.toLowerCase());
+        return index > -1 || index1 > -1 || index2 > -1;
+      });
+      total = discountCodes.length;
+    }
+
+    discountCodes = discountCodes.slice(
+      (_page - 1) * _limit,
+      (_page - 1) * _limit + _limit
+    );
+
+    return Response.success(res, {
+      discountCodes: remove_Id(discountCodes),
+      total,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getDetail = async (req, res, next) => {
+  try {
+    const {
+      params: { discountCodeId },
+    } = req;
+
+    if (!discountCodeId) throw new Error(failMessage);
+    const discountCode = await DiscountCode.findById(discountCodeId);
+    if (!discountCode) throw new Error(failMessage);
+    discountCode._doc.id = discountCode._id;
+
+    return Response.success(res, { discountCode });
+  } catch (error) {
+    return next(error);
+  }
+};
 
 exports.create = async (req, res, next) => {
   try {
@@ -113,4 +167,25 @@ exports.update = async (req, res, next) => {
   }
 };
 
-exports.delete = async (req, res, next) => {};
+exports.delete = async (req, res, next) => {
+  try {
+    const {
+      params: { discountCodeId },
+    } = req;
+
+    if (!discountCodeId) throw new Error(failMessage);
+    const discountCode = await DiscountCode.findById(discountCodeId);
+    if (!discountCode) throw new Error(failMessage);
+
+    const discountCodeDetails = await DiscountCodeDetail.find({
+      discountCodeId,
+    });
+    for (let discountCodeDetail of discountCodeDetails)
+      await DiscountCodeDetail.findByIdAndDelete(discountCodeDetail._id);
+    await DiscountCode.findByIdAndDelete(discountCodeId);
+
+    return Response.success(res, { message: deleteSuccessMessage });
+  } catch (error) {
+    return next(error);
+  }
+};
