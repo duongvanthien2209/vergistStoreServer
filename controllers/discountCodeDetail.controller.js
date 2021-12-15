@@ -32,6 +32,7 @@ exports.getAllByUser = async (req, res, next) => {
       .populate("discountCodeId")
       .array.forEach((item) => {
         item.discountCodeId._doc.id = item.discountCodeId._doc._id;
+        item.discountCodeId._doc.total = item.total;
         return item.discountCodeId._doc;
       });
 
