@@ -11,9 +11,9 @@ const {
 // @access  Private
 router.get("/", getAllByUser);
 
-// @route   POST api/user/discountCodeDetail
+// @route   POST api/user/discountCodeDetail/:discountCodeId
 // @desc    Create DiscountCodeDetail
 // @access  Private
-router.post("/", create);
+router.post("/:discountCodeId", create);
 
 module.exports = router;

@@ -3,6 +3,7 @@ const DiscountCode = require("../models/DiscountCode");
 const Response = require("../helpers/response.helper");
 const remove_Id = require("../utils/remove_Id");
 const uploadImage = require("../utils/uploadImage");
+const constant = require("../constants/index");
 
 const {
   response: {
@@ -73,29 +74,26 @@ exports.create = async (req, res, next) => {
     const { codeName, title, description, total, sale, amount, dateExpire } =
       req.body;
 
-    if (
-      !codeName ||
-      !title ||
-      !description ||
-      (!total && !isNaN(total)) ||
-      !dateExpire
-    )
+    if (!codeName || !title || !description || (!total && !isNaN(total)))
       throw new Error(failMessage);
 
-    let discountCode = await DiscountCode.findById({ codeName });
+    let discountCode = await DiscountCode.findOne({ codeName });
     if (discountCode) throw new Error(existCodeMessage);
-
-    dateExpire = new Date(dateExpire);
-    if (dateExpire <= Date.now())
-      throw new Error("Ngày hết hạn phải lớn hơn ngày hiện tại");
 
     let obj = {
       codeName,
       title,
       description,
       total: parseInt(total),
-      dateExpire,
+      // dateExpire,
     };
+
+    if (dateExpire) {
+      dateExpire = new Date(dateExpire);
+      if (dateExpire <= Date.now())
+        throw new Error("Ngày hết hạn phải lớn hơn ngày hiện tại");
+      obj = { ...obj, dateExpire };
+    }
 
     if (!isNaN(sale)) obj = { ...obj, sale: parseInt(sale) };
     if (!isNaN(amount)) obj = { ...obj, amount: parseFloat(amount) };

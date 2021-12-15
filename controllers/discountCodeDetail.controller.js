@@ -54,8 +54,9 @@ exports.getAllByUser = async (req, res, next) => {
 // Nếu đã có mã giảm giá thì không được thêm
 exports.create = async (req, res, next) => {
   try {
-    const {
-      body: { discountCodeId, total },
+    let {
+      params: { discountCodeId },
+      body: { total },
       user,
     } = req;
 
