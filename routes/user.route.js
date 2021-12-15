@@ -15,6 +15,10 @@ const {
 } = require("../controllers/user/addDb.controller");
 
 // UnProtected
+// router.get(
+//   "/",
+//   require("../controllers/user/addDb.controller").addTotalToProduct
+// );
 
 // Auth
 router.use("/auth", require("./user/auth.route"));

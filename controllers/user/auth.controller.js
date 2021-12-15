@@ -14,15 +14,15 @@ const {
 } = require("../../constants");
 
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { phoneNumber, password } = req.body;
 
   // console.log(req.body);
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ phoneNumber });
 
     if (!user) {
-      throw new Error("Email không tồn tại");
+      throw new Error("Số điện thoại không tồn tại");
     }
 
     if (user.status && user.status === "blocked")
@@ -72,23 +72,23 @@ exports.register = async (req, res, next) => {
   const {
     firstName,
     lastName,
-    // phoneNumber,
+    phoneNumber,
     // address,
     // birthday,
     // avatar,
     // gender,
-    email,
+    // email,
     password,
   } = req.body;
 
   try {
-    if (!firstName || !lastName || !email || !password)
+    if (!firstName || !lastName || !phoneNumber || !password)
       throw new Error(failMessage);
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ phoneNumber });
 
     if (user) {
-      throw new Error("Email đã tồn tại");
+      throw new Error("Số điện thoại đã tồn tại");
     } else user = null;
 
     // const dateParts = birthday.split("/");
@@ -105,7 +105,7 @@ exports.register = async (req, res, next) => {
       // address,
       password: generatedPass,
       // gender: gender === "Nam",
-      email,
+      // email,
       role: "user",
       status: "activated",
       // birthday: new Date(

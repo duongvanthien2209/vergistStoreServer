@@ -14,6 +14,7 @@ const BillDetail = require("../models/BillDetail");
 const Token = require("../models/Token");
 
 const uploadImage = require("../utils/uploadImage");
+const { protect } = require("../middlewares/admin/auth");
 
 const {
   response: {
@@ -96,7 +97,7 @@ exports.getDetail = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   let {
     file,
-    body: { firstName, lastName, phoneNumber, address, birthday, gender },
+    body: { firstName, lastName, address, birthday, gender, email },
     user,
   } = req;
   try {
@@ -128,7 +129,12 @@ exports.update = async (req, res, next) => {
         fullName: `${currentFirstName || user.firstName} ${lastName}`,
       };
 
-    if (phoneNumber) obj = { ...obj, phoneNumber };
+    // if (phoneNumber) obj = { ...obj, phoneNumber };
+    if (email) {
+      const currentUser = await User.findOne({ email });
+      if (currentUser) throw new Error("Email đã có người sử dụng");
+      obj = { ...obj, email };
+    }
     if (address) obj = { ...obj, address };
     if (birthday) obj = { ...obj, birthday: new Date(birthday) };
     if (gender === "true" || gender === "false")
@@ -170,7 +176,7 @@ exports.updatePassword = async (req, res, next) => {
     await Token.create({
       userId: user._id,
       newPassword: generatedPass,
-      token: crypto.createHash("sha256").update(token).digest("hex"),
+      token,
       tokenExpire: Date.now() + 24 * 60 * 60 * 1000,
     });
 
@@ -205,7 +211,7 @@ exports.updatePasswordConfirm = async (req, res, next) => {
     if (!token) throw new Error(failMessage);
 
     const currentToken = await Token.findOne({ token });
-    if (!currentToken && Date.now() > currentToken.tokenExpire)
+    if (!currentToken || Date.now() > currentToken.tokenExpire)
       throw new Error(failMessage);
 
     const user = await User.findByIdAndUpdate(currentToken.userId, {
@@ -215,7 +221,7 @@ exports.updatePasswordConfirm = async (req, res, next) => {
     user._doc.id = user._id;
 
     await Token.findByIdAndDelete(currentToken._id);
-    return Response.success({ user, message: updateSuccessMessage });
+    return Response.success(res, { user, message: updateSuccessMessage });
   } catch (error) {
     return next(error);
   }

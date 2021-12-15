@@ -164,6 +164,7 @@ exports.addProduct = async (req, res, next) => {
         // sale,
         // rate,
         // size,
+        total,
         unit,
         tagId,
         shortDes,
@@ -201,6 +202,7 @@ exports.addProduct = async (req, res, next) => {
 
     if (des) obj = { ...obj, des };
     if (shortDes) obj = { ...obj, shortDes };
+    if (total && !isNaN(total)) obj = { ...obj, total: parseInt(total) };
 
     if (files) {
       let resultUrls = [];
@@ -266,6 +268,7 @@ exports.updateProduct = async (req, res, next) => {
         tagId,
         shortDes,
         des,
+        total,
       },
     } = req;
 
@@ -307,6 +310,7 @@ exports.updateProduct = async (req, res, next) => {
       obj = { ...obj, "status.new": isNew };
     if (isHot === "true" || isHot === "false")
       obj = { ...obj, "status.hot": isHot };
+    if (total && !isNaN(total)) obj = { ...obj, total: parseInt(total) };
 
     if (files) {
       let resultUrls = [];

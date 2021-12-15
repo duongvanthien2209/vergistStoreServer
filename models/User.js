@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: true,
+    unique: true,
   },
 
   address: {
@@ -43,7 +44,7 @@ const UserSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    required: true,
+    // required: true,
     unique: true,
   },
 

@@ -192,6 +192,7 @@ exports.create = async (req, res, next) => {
       name,
       address,
       phoneNumber,
+      // total: parseFloat(currentTotal),
     });
     let total = 0;
     for (let cartDetail of cartDetails) {
@@ -209,7 +210,9 @@ exports.create = async (req, res, next) => {
     }
     await Cart.findByIdAndDelete(cart._id);
 
-    bill = await Bill.findByIdAndUpdate(bill._id, { total });
+    bill = await Bill.findByIdAndUpdate(bill._id, {
+      total: total + 20000,
+    });
     bill._doc.id = bill._id;
 
     return Response.success(res, { message: createSuccessMessage, bill });
@@ -310,23 +313,29 @@ exports.updateStatus = async (req, res, next) => {
           throw new Error(
             "Bạn chỉ có thể thay đổi trạng thái khi đơn hàng đã được giao với hình thức thanh toán trực tiếp"
           );
-        else
+        else {
+          if (status === "Đã hủy") await cancelBillDetails(bill._id);
+
           await Bill.findByIdAndUpdate(bill._id, {
             status,
             isCompleted: isCompleted === "true",
             dateModified: Date.now(),
           });
+        }
       }
 
       // Cho các hình thức thanh toán khác
       // if() {
 
       // }
-    } else
+    } else {
+      if (status === "Đã hủy") await cancelBillDetails(bill._id);
+
       await Bill.findByIdAndUpdate(bill._id, {
         status,
         dateModified: Date.now(),
       });
+    }
     bill = await Bill.findById(billId);
     bill._doc.id = bill._id;
 
@@ -358,5 +367,17 @@ exports.delete = async (req, res, next) => {
     return Response.success(res, { message: deleteSuccessMessage });
   } catch (error) {
     return next(error);
+  }
+};
+
+const cancelBillDetails = async (billId) => {
+  try {
+    const billDetails = await BillDetail.find({ billId });
+    for (let billDetail of billDetails)
+      await Product.findByIdAndUpdate(billDetail.productId, {
+        $inc: { total: billDetail.quantity },
+      });
+  } catch (error) {
+    return console.log(error);
   }
 };
