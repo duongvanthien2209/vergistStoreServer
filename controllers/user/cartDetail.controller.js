@@ -57,10 +57,10 @@ exports.create = async (req, res, next) => {
           cartId: cart._id,
         });
       } else {
-        // if (cartDetail.quantity + quantity > 30)
-        //   throw new Error(
-        //     "Số sản phẩm hiện tại bạn đang có và số sản phẩm thêm vào của bạn hiện vượt quá 30 SP cho phép"
-        //   );
+        if (cartDetail.quantity + quantity > 30)
+          throw new Error(
+            "Số sản phẩm hiện tại bạn đang có và số sản phẩm thêm vào của bạn hiện vượt quá 30 SP cho phép"
+          );
 
         cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
           quantity: cartDetail.quantity + quantity,
