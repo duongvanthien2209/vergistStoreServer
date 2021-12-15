@@ -170,10 +170,11 @@ exports.getDetail = async (req, res, next) => {
 };
 
 // Cập nhật lại code nếu thanh toán bằng thẻ ngân hàng...
+// Áp thêm mã giảm giá
 exports.create = async (req, res, next) => {
   try {
     const {
-      body: { payment, name, address, phoneNumber },
+      body: { payment, name, address, phoneNumber, discountCodeId },
       user,
     } = req;
 

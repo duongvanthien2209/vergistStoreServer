@@ -16,6 +16,11 @@ const DiscountCodeDetail = new mongoose.Schema({
     ref: "DiscountCode",
     required: true,
   },
+  dateCreate: {
+    type: Date,
+    required: true,
+    default: Date.now(),
+  },
 });
 
 module.exports = mongoose.model(
