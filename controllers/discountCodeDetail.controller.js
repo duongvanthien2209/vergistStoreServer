@@ -59,7 +59,7 @@ exports.create = async (req, res, next) => {
     } = req;
 
     if (!user || !discountCodeId) throw new Error(failMessage);
-    total = parseInt(total) || 1;
+    total = total && !isNaN(total) ? parseInt(total) : 1;
 
     const discountCode = await DiscountCode.findById(discountCodeId);
     if (!discountCode) throw new Error(failMessage);

@@ -29,6 +29,10 @@ router.use(handleError);
 router.use("/billDetail", require("./admin/billDetail.route"));
 router.use(handleError);
 
+// DiscountCodes
+router.use("/discountCode", require("./admin/discountCode.route"));
+router.use(handleError);
+
 // Middlewares
 router.use(protect);
 

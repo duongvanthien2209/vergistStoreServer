@@ -61,4 +61,8 @@ router.use(handleError);
 router.use("/bill", require("./user/bill.route"));
 router.use(handleError);
 
+// DiscountCodeDetails
+router.use("/discountCodeDetail", require("./user/discountCodeDetail.route"));
+router.use(handleError);
+
 module.exports = router;

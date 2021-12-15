@@ -174,12 +174,25 @@ exports.getDetail = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const {
-      body: { payment, name, address, phoneNumber, discountCodeId },
+      // body: { name, address, phoneNumber, shipPayment, VAT, discountCodeId },
+      body: { name, address, phoneNumber, total },
       user,
     } = req;
 
-    if (!user || !payment || !name || !address || !phoneNumber)
+    if (
+      !user ||
+      // (!shipPayment && !isNaN(shipPayment)) ||
+      !name ||
+      !address ||
+      !phoneNumber ||
+      !total ||
+      isNaN(total)
+    )
       throw new Error(failMessage);
+
+    // shipPayment = parseInt(shipPayment);
+    // VAT = !VAT || isNaN(VAT) ? 10 : parseInt(VAT);
+
     const cart = await Cart.findOne({ userId: user._id });
     if (!cart) throw new Error(failMessage);
 
@@ -194,11 +207,11 @@ exports.create = async (req, res, next) => {
       phoneNumber,
       // total: parseFloat(currentTotal),
     });
-    let total = 0;
+    // let total = 0;
     for (let cartDetail of cartDetails) {
       const product = await Product.findById(cartDetail.productId);
       if (!product) throw new Error(failMessage);
-      total += product.price * cartDetail.quantity;
+      // total += product.price * cartDetail.quantity;
 
       await BillDetail.create({
         quantity: cartDetail.quantity,
@@ -210,8 +223,12 @@ exports.create = async (req, res, next) => {
     }
     await Cart.findByIdAndDelete(cart._id);
 
+    // total += total * VAT * 0.01;
+    // bill = await Bill.findByIdAndUpdate(bill._id, {
+    //   total: total + shipPayment,
+    // });
     bill = await Bill.findByIdAndUpdate(bill._id, {
-      total: total + 20000,
+      total: parseInt(total),
     });
     bill._doc.id = bill._id;
 
