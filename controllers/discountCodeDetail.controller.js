@@ -9,6 +9,8 @@ const {
     failMessage,
   },
 } = require("../constants");
+
+const constant = require("../constants/index");
 const Response = require("../helpers/response.helper");
 const remove_Id = require("../utils/remove_Id");
 
@@ -29,12 +31,13 @@ exports.getAllByUser = async (req, res, next) => {
       userId: user._id,
     })
       .sort({ dateCreate: -1 })
-      .populate("discountCodeId")
-      .array.forEach((item) => {
-        item.discountCodeId._doc.id = item.discountCodeId._doc._id;
-        item.discountCodeId._doc.total = item.total;
-        return item.discountCodeId._doc;
-      });
+      .populate("discountCodeId");
+
+    discountCodes = discountCodes.map((item) => {
+      item.discountCodeId._doc.id = item.discountCodeId._doc._id;
+      item.discountCodeId._doc.total = item.total;
+      return item.discountCodeId._doc;
+    });
 
     const total = discountCodes.length;
 
@@ -51,7 +54,7 @@ exports.getAllByUser = async (req, res, next) => {
 };
 
 // Lấy mã giảm giá
-// Nếu đã có mã giảm giá thì không được thêm
+// Nếu đã có mã giảm giá thì không được thêm -> mỗi người chỉ được phép lấy mã 1 lần (Mặc định là 1)
 exports.create = async (req, res, next) => {
   try {
     let {
@@ -75,7 +78,7 @@ exports.create = async (req, res, next) => {
     if (discountCode.total < total)
       throw new Error("Xin lỗi mã giảm giá hiện không đủ");
     await DiscountCode.findByIdAndUpdate(discountCode._id, {
-      $inc: { total: -total },
+      $inc: { total: -total, takenTotal: total },
     });
 
     discountCodeDetail = await DiscountCodeDetail.create({
@@ -83,6 +86,9 @@ exports.create = async (req, res, next) => {
       userId: user._id,
       discountCodeId: discountCode._id,
     });
+    discountCodeDetail = await DiscountCodeDetail.findById(
+      discountCodeDetail._id
+    ).populate("discountCodeId");
     discountCodeDetail._doc.id = discountCodeDetail._id;
 
     return Response.success(res, {
