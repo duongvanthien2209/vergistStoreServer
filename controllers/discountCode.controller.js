@@ -71,29 +71,48 @@ exports.getDetail = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const { codeName, title, description, total, sale, amount, dateExpire } =
-      req.body;
+    const {
+      codeName,
+      title,
+      description,
+      total,
+      sale,
+      amount,
+      dateExpire,
+      dateCreate,
+    } = req.body;
 
-    if (!codeName || !title || !description || (!total && !isNaN(total)))
+    if (
+      !codeName ||
+      !title ||
+      !description ||
+      !total ||
+      isNaN(total) ||
+      !dateExpire
+    )
       throw new Error(failMessage);
 
     let discountCode = await DiscountCode.findOne({ codeName });
     if (discountCode) throw new Error(existCodeMessage);
+
+    if (dateCreate) {
+      dateCreate = new Date(dateCreate);
+      if (dateExpire < Date.now())
+        throw new Error("Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại");
+    } else dateCreate = Date.now();
+
+    dateExpire = new Date(dateExpire);
+    if (dateExpire < dateCreate + 24 * 3600 * 1000)
+      throw new Error("Ngày hết hạn phải cách ngày bắt đầu ít nhất 1 ngày");
 
     let obj = {
       codeName,
       title,
       description,
       total: parseInt(total),
-      // dateExpire,
+      dateExpire,
+      dateCreate,
     };
-
-    if (dateExpire) {
-      dateExpire = new Date(dateExpire);
-      if (dateExpire <= Date.now())
-        throw new Error("Ngày hết hạn phải lớn hơn ngày hiện tại");
-      obj = { ...obj, dateExpire };
-    }
 
     if (!isNaN(sale)) obj = { ...obj, sale: parseInt(sale) };
     if (!isNaN(amount)) obj = { ...obj, amount: parseFloat(amount) };
@@ -114,7 +133,7 @@ exports.update = async (req, res, next) => {
   try {
     const {
       params: { discountCodeId },
-      body: { codeName, title, description, total, sale, amount, dateExpire },
+      body: { codeName, title, description, total, sale, amount },
     } = req;
 
     if (!discountCodeId) throw new Error(failMessage);
@@ -145,12 +164,6 @@ exports.update = async (req, res, next) => {
     if (!isNaN(sale)) obj = { ...obj, sale: parseInt(sale) };
 
     if (!isNaN(amount)) obj = { ...obj, amount: parseFloat(amount) };
-
-    if (dateExpire) {
-      dateExpire = new Date(dateExpire);
-      if (new Date(dateExpire) < Date.now())
-        throw new Error("Ngày hết hạn phải lớn hơn hoặc bằng ngày hiện tại");
-    }
 
     await DiscountCode.findByIdAndUpdate(discountCode._id, { ...obj });
     discountCode = await DiscountCode.findById(discountCode._id);

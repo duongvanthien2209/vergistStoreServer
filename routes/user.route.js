@@ -46,6 +46,10 @@ router.get("/updatePrice", changeImageToProduct);
 router.use("/review", require("./user/review.route"));
 router.use(handleError);
 
+// DiscountCodes
+router.use("/discountCode", require("./user/discountCode.route"));
+router.use(handleError);
+
 // Protected
 router.use(protect);
 

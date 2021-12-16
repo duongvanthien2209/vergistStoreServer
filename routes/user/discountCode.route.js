@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const {} = require("../../controllers/discountCode.controller");
+const { getAll } = require("../../controllers/discountCode.controller");
 
-// @route   POST api/user/products
-// @desc    Filter Products
+// @route   GET api/user/discountCode
+// @desc    Get All DiscountCode
 // @access  Public
-// router.get("/", getAll);
+router.get("/", getAll);
 
 module.exports = router;
