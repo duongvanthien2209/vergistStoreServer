@@ -71,7 +71,7 @@ exports.getDetail = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
-    const {
+    let {
       codeName,
       title,
       description,
