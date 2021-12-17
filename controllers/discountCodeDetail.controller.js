@@ -39,7 +39,15 @@ exports.getAllByUser = async (req, res, next) => {
       return item.discountCodeId._doc;
     });
 
-    const total = discountCodes.length;
+    let total = discountCodes.length;
+
+    if (q) {
+      discountCodes = discountCodes.filter((item) => {
+        const index = item.codeName.toLowerCase().indexOf(q.toLowerCase());
+        return index > -1;
+      });
+      total = discountCodes.length;
+    }
 
     return Response.success(res, {
       discountCodes: discountCodes.slice(
