@@ -6,4 +6,5 @@ module.exports = {
     deleteSuccessMessage: "Xóa thành công",
     failMessage: "Có lỗi xảy ra",
   },
+  _limitProduct: 30,
 };

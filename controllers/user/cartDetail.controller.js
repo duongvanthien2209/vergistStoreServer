@@ -4,6 +4,7 @@ const Product = require("../../models/Product");
 const Response = require("../../helpers/response.helper");
 const constant = require("../../constants/index");
 const remove_Id = require("../../utils/remove_Id");
+const { _limitProduct } = require("../../constants");
 
 const {
   response: {
@@ -29,7 +30,11 @@ exports.create = async (req, res, next) => {
     const product = await Product.findById(productId);
     if (!product) throw new Error(failMessage);
 
-    if (quantity > 30) throw new Error("Bạn chỉ thêm được tối đa 30 sản phẩm");
+    let warningMessage;
+    if (quantity > _limitProduct) {
+      warningMessage = "Bạn chỉ thêm được tối đa 30 sản phẩm";
+      quantity = _limitProduct;
+    }
     if (quantity > product.total)
       throw new Error("Số sản phẩm còn lại trong kho không đủ.");
 
@@ -57,14 +62,17 @@ exports.create = async (req, res, next) => {
           cartId: cart._id,
         });
       } else {
-        if (cartDetail.quantity + quantity > 30)
-          throw new Error(
-            "Số sản phẩm hiện tại bạn đang có và số sản phẩm thêm vào của bạn hiện vượt quá 30 SP cho phép"
-          );
+        let total = cartDetail.quantity + quantity;
+        if (cartDetail.quantity + quantity > 30) {
+          warningMessage =
+            "Số sản phẩm hiện tại bạn đang có và số sản phẩm thêm vào của bạn hiện vượt quá 30 SP cho phép";
+          total = _limitProduct;
+        }
 
         cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
-          quantity: cartDetail.quantity + quantity,
+          quantity: total,
         });
+        quantity = total;
       }
     }
     // cartDetail = await CartDetail.findById(cartDetail._id).populate(
@@ -72,17 +80,20 @@ exports.create = async (req, res, next) => {
     // );
     // cartDetail._doc.id = cartDetail._id;
     await Product.findByIdAndUpdate(product._id, {
-      total: product.total - quantity,
+      $inc: { total: -quantity },
     });
     const cartDetails = await CartDetail.find({ cartId: cart._id }).populate(
       "productId"
     );
     if (!cartDetails) throw new Error(failMessage);
 
-    return Response.success(res, {
+    let resObj = {
       message: createSuccessMessage,
       cartDetails: remove_Id(cartDetails),
-    });
+    };
+    if (warningMessage) resObj = { ...resObj, warningMessage };
+
+    return Response.success(res, resObj);
   } catch (error) {
     return next(error);
   }
@@ -98,9 +109,13 @@ exports.update = async (req, res, next) => {
 
     if (!cartDetailId || !quantity || isNaN(quantity))
       throw new Error(failMessage);
-
     quantity = parseInt(quantity);
-    if (quantity > 30) throw new Error("Bạn chỉ được mua tối đa 30 SP");
+
+    let warningMessage;
+    if (quantity > _limitProduct) {
+      warningMessage = "Bạn chỉ thêm được tối đa 30 sản phẩm";
+      quantity = _limitProduct;
+    }
 
     let cartDetail = await CartDetail.findById(cartDetailId).populate(
       "productId"
@@ -143,7 +158,13 @@ exports.update = async (req, res, next) => {
     cartDetail = await CartDetail.findById(cartDetailId).populate("productId");
     cartDetail._doc.id = cartDetail._id;
 
-    return Response.success(res, { message: updateSuccessMessage, cartDetail });
+    let resObj = {
+      message: updateSuccessMessage,
+      cartDetail,
+    };
+    if (warningMessage) resObj = { ...resObj, warningMessage };
+
+    return Response.success(res, resObj);
   } catch (error) {
     return next(error);
   }
