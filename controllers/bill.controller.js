@@ -4,6 +4,8 @@ const Cart = require("../models/Cart");
 const CartDetail = require("../models/CartDetail");
 const BillDetail = require("../models/BillDetail");
 const Product = require("../models/Product");
+const DiscountCode = require("../models/DiscountCode");
+const DiscountCodeDetail = require("../models/DiscountCodeDetail");
 
 const Response = require("../helpers/response.helper");
 const constant = require("../constants/index");
@@ -175,7 +177,7 @@ exports.create = async (req, res, next) => {
   try {
     const {
       // body: { name, address, phoneNumber, shipPayment, VAT, discountCodeId },
-      body: { name, address, phoneNumber, total },
+      body: { name, address, phoneNumber, total, codeName },
       user,
     } = req;
 
@@ -222,6 +224,29 @@ exports.create = async (req, res, next) => {
       await CartDetail.findByIdAndDelete(cartDetail._id);
     }
     await Cart.findByIdAndDelete(cart._id);
+
+    if (codeName) {
+      const discountCode = await DiscountCode.findOne({ codeName });
+      if (!discountCode) throw new Error(failMessage);
+
+      const discountCodeDetail = await DiscountCodeDetail.findOne({
+        discountCodeId: discountCode._id,
+        userId: user._id,
+      });
+      if (discountCodeDetail) {
+        if (discountCodeDetail > 1)
+          await DiscountCodeDetail.findByIdAndUpdate(discountCodeDetail._id, {
+            total: { $inc: -1 },
+          });
+        else await DiscountCodeDetail.findByIdAndDelete(discountCodeDetail._id);
+      } else {
+        if (
+          discountCode.total <= 0 ||
+          !(discountCode.dateCreate <= Date.now() <= discountCode.dateExpire)
+        )
+          throw new Error("Xin lôi bạn không thê áp mã giảm giá này");
+      }
+    }
 
     // total += total * VAT * 0.01;
     // bill = await Bill.findByIdAndUpdate(bill._id, {
