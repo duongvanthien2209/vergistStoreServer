@@ -164,6 +164,11 @@ exports.updatePassword = async (req, res, next) => {
   try {
     if (!user || !password || !newPassword) throw new Error(failMessage);
 
+    if (!user.email)
+      throw new Error("Bạn cần phải có email để xác nhận thay đổi mật khẩu");
+
+    await Token.findOneAndDelete({ userId: user._id });
+
     const result = await bcrypt.compare(password, user.password);
     if (!result) throw new Error("Bạn nhập sai mật khẩu");
 
