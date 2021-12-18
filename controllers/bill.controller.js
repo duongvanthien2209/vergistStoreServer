@@ -236,7 +236,7 @@ exports.create = async (req, res, next) => {
       if (discountCodeDetail) {
         if (discountCodeDetail > 1)
           await DiscountCodeDetail.findByIdAndUpdate(discountCodeDetail._id, {
-            total: { $inc: -1 },
+            $inc: { total: -1 },
           });
         else await DiscountCodeDetail.findByIdAndDelete(discountCodeDetail._id);
       } else {

@@ -71,7 +71,7 @@ exports.create = async (req, res, next) => {
 
         // Trả lại số sản phẩm cũ cho product
         await Product.findByIdAndUpdate(product._id, {
-          total: { $inc: cartDetail.quantity },
+          $inc: { total: cartDetail.quantity },
         });
 
         cartDetail = await CartDetail.findByIdAndUpdate(cartDetail._id, {
