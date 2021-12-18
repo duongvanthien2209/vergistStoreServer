@@ -33,6 +33,10 @@ router.use(handleError);
 router.use("/discountCode", require("./admin/discountCode.route"));
 router.use(handleError);
 
+// DiscountCodes
+router.use("/statistical", require("./admin/statistical.route"));
+router.use(handleError);
+
 // Middlewares
 router.use(protect);
 
