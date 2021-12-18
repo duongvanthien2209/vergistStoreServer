@@ -203,10 +203,11 @@ exports.create = async (req, res, next) => {
 
     let bill = await Bill.create({
       userId: user._id,
-      payment,
+      // payment,
       name,
       address,
       phoneNumber,
+      total,
       // total: parseFloat(currentTotal),
     });
     // let total = 0;
@@ -252,9 +253,10 @@ exports.create = async (req, res, next) => {
     // bill = await Bill.findByIdAndUpdate(bill._id, {
     //   total: total + shipPayment,
     // });
-    bill = await Bill.findByIdAndUpdate(bill._id, {
-      total: parseInt(total),
-    });
+    // bill = await Bill.findByIdAndUpdate(bill._id, {
+    //   total: parseInt(total),
+    // });
+    bill = await Bill.findById(bill._id);
     bill._doc.id = bill._id;
 
     return Response.success(res, { message: createSuccessMessage, bill });
