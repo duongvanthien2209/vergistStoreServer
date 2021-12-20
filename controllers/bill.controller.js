@@ -208,6 +208,7 @@ exports.create = async (req, res, next) => {
       address,
       phoneNumber,
       total,
+      dateCreate: new Date(),
       // total: parseFloat(currentTotal),
     });
     // let total = 0;
