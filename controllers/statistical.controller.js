@@ -1,8 +1,11 @@
+const moment = require("moment");
+
 const Bill = require("../models/Bill");
 const Product = require("../models/Product");
 
 const Response = require("../helpers/response.helper");
 const User = require("../models/User");
+const BillDetail = require("../models/BillDetail");
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -14,85 +17,95 @@ exports.getAll = async (req, res, next) => {
     let users;
     let products;
 
-    if (sortBy === "DoanhThu") {
-      bills = await Bill.aggregate([
-        {
-          $match: { dateModified: { $ne: null } },
-        },
-        {
-          $group: {
-            _id: {
-              year: { $year: "$dateModified" },
-              month: { $month: "$dateModified" },
-              day: { $dayOfMonth: "$dateModified" },
-            },
-            totalAmount: { $sum: "$total" },
+    bills = await Bill.aggregate([
+      {
+        $match: { dateModified: { $ne: null } },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$dateModified" },
+            month: { $month: "$dateModified" },
+            day: { $dayOfMonth: "$dateModified" },
           },
+          totalAmount: { $sum: "$total" },
         },
-      ]);
-    } else if (sortBy === "SanPham") {
-      currentBills = await Bill.aggregate([
-        {
-          $match: { dateCreate: { $ne: null } },
-        },
-        {
-          $group: {
-            _id: {
-              year: { $year: "$dateModified" },
-              month: { $month: "$dateModified" },
-              day: { $dayOfMonth: "$dateModified" },
-            },
-            total: { $sum: 1 },
-          },
-        },
-      ]);
+      },
+    ]);
 
-      for (let currentBill of currentBills) {
-        const totalBills = await Bill.find({ $where: "" });
-      }
-    } else {
-      users = await User.aggregate([
-        {
-          $match: { dateCreate: { $ne: null } },
-        },
-        {
-          $group: {
-            _id: {
-              year: { $year: "$dateModified" },
-              month: { $month: "$dateModified" },
-              day: { $dayOfMonth: "$dateModified" },
-            },
-            count: { $sum: 1 },
+    products = await Bill.aggregate([
+      {
+        $match: { dateCreate: { $ne: null } },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$dateCreate" },
+            month: { $month: "$dateCreate" },
+            day: { $dayOfMonth: "$dateCreate" },
           },
+          total: { $sum: 1 },
         },
-      ]);
+      },
+    ]);
+
+    for (let currentBill of products) {
+      const currentDate = moment(
+        `${currentBill._id.day}/${currentBill._id.month}/${currentBill._id.year}`,
+        "DD/MM/YYYY"
+      );
+      const totalBills = await Bill.find({
+        $and: [
+          {
+            dateCreate: {
+              $gte: new Date(currentDate.startOf("day").toISOString()),
+            },
+          },
+          {
+            dateCreate: {
+              $lte: new Date(currentDate.endOf("day").toISOString()),
+            },
+          },
+        ],
+      });
+
+      let total = 0;
+      for (let totalBill of totalBills) {
+        const detailBills = await BillDetail.find({ billId: totalBill._id });
+        total += detailBills.reduce(
+          (item1, item2) => item1 + item2.quantity,
+          0
+        );
+      }
+      currentBill.total = total;
     }
 
-    // const products = await Product.aggregate([
-    //   { $project: { minutes: { $minute: "$dateCreate" }, total: { $sum: 1 } } },
-    // ]);
-    // const bills = await Bill.aggregate([
-    //   {
-    //     $match: { dateModified: { $ne: null } },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: {
-    //         year: { $year: "$dateModified" },
-    //         month: { $month: "$dateModified" },
-    //         day: { $dayOfMonth: "$dateModified" },
-    //       },
-    //       totalAmount: { $sum: "$total" },
-    //     },
-    //   },
-    // ]);
+    // console.log("CURRENT BILL: ", currentBills);
 
-    let obj = {};
-    if (bills) obj = { bills };
-    if (users) obj = { ...obj, users };
-    if (products) obj = { ...obj, products };
+    users = await User.aggregate([
+      {
+        $match: { dateCreate: { $ne: null } },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$dateModified" },
+            month: { $month: "$dateModified" },
+            day: { $dayOfMonth: "$dateModified" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    return Response.success(res, obj);
+    return Response.success(res, {
+      bills,
+      users,
+      products,
+      totalBills: await Bill.find().count(),
+      totalProducts: await Product.find().count(),
+      totalUsers: await User.find().count(),
+    });
   } catch (error) {
     return next(error);
   }
