@@ -24,7 +24,7 @@ exports.getAll = async (req, res, next) => {
             month: { $month: "$dateModified" },
             day: { $dayOfMonth: "$dateModified" },
           },
-          totalAmount: { $sum: "$total" },
+          bills: { $sum: "$total" },
         },
       },
     ]);
@@ -40,7 +40,7 @@ exports.getAll = async (req, res, next) => {
             month: { $month: "$dateCreate" },
             day: { $dayOfMonth: "$dateCreate" },
           },
-          total: { $sum: 1 },
+          products: { $sum: 1 },
         },
       },
     ]);
@@ -73,7 +73,7 @@ exports.getAll = async (req, res, next) => {
           0
         );
       }
-      currentBill.total = total;
+      currentBill.products = total;
     }
 
     // console.log("CURRENT BILL: ", currentBills);
@@ -89,7 +89,7 @@ exports.getAll = async (req, res, next) => {
             month: { $month: "$dateModified" },
             day: { $dayOfMonth: "$dateModified" },
           },
-          count: { $sum: 1 },
+          users: { $sum: 1 },
         },
       },
     ]);
