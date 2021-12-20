@@ -98,9 +98,9 @@ exports.create = async (req, res, next) => {
 
     if (dateCreate) {
       dateCreate = new Date(dateCreate);
-      if (dateExpire < Date.now())
+      if (dateCreate < Date.now())
         throw new Error("Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại");
-    } else dateCreate = Date.now();
+    } else dateCreate = new Date();
 
     dateExpire = new Date(dateExpire);
     if (dateExpire < dateCreate)
