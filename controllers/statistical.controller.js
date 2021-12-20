@@ -48,7 +48,7 @@ exports.getAll = async (req, res, next) => {
       ]);
 
       for (let currentBill of currentBills) {
-        const totalBills = await Bill.find();
+        const totalBills = await Bill.find({ $where: "" });
       }
     } else {
       users = await User.aggregate([
