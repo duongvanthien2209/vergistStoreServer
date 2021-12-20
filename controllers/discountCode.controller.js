@@ -97,12 +97,12 @@ exports.create = async (req, res, next) => {
     if (discountCode) throw new Error(existCodeMessage);
 
     if (dateCreate) {
-      dateCreate = new Date(moment(dateCreate, "DD/MM/YYYY"));
+      dateCreate = new Date(dateCreate);
       if (dateExpire < Date.now())
         throw new Error("Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại");
     } else dateCreate = Date.now();
 
-    dateExpire = new Date(moment(dateExpire, "DD/MM/YYYY"));
+    dateExpire = new Date(dateExpire);
     if (dateExpire < dateCreate)
       throw new Error("Ngày hết hạn không được nhỏ hơn ngày kết thúc");
 
