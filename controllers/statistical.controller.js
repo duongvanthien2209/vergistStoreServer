@@ -9,10 +9,6 @@ const BillDetail = require("../models/BillDetail");
 
 exports.getAll = async (req, res, next) => {
   try {
-    let {
-      query: { sortBy },
-    } = req;
-    if (!sortBy) sortBy = "DoanhThu";
     let bills;
     let users;
     let products;
@@ -99,9 +95,18 @@ exports.getAll = async (req, res, next) => {
     ]);
 
     return Response.success(res, {
-      bills,
-      users,
-      products,
+      bills: changeToDate(bills).sort(
+        (item1, item2) =>
+          moment(item1.date, "DD/MM/YYYY") - moment(item2.date, "DD/MM/YYYY")
+      ),
+      users: changeToDate(users).sort(
+        (item1, item2) =>
+          moment(item1.date, "DD/MM/YYYY") - moment(item2.date, "DD/MM/YYYY")
+      ),
+      products: changeToDate(products).sort(
+        (item1, item2) =>
+          moment(item1.date, "DD/MM/YYYY") - moment(item2.date, "DD/MM/YYYY")
+      ),
       totalBills: await Bill.find().count(),
       totalProducts: await Product.find().count(),
       totalUsers: await User.find().count(),
@@ -110,3 +115,11 @@ exports.getAll = async (req, res, next) => {
     return next(error);
   }
 };
+
+function changeToDate(arr) {
+  return arr.map((item) => {
+    item.date = `${item._id.day}/${item._id.month}/${item._id.year}`;
+    delete item._id;
+    return item;
+  });
+}
