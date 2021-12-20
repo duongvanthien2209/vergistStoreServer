@@ -66,6 +66,11 @@ const UserSchema = new mongoose.Schema({
     default: "blocked",
     required: true,
   },
+
+  dateCreate: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema, "users");
