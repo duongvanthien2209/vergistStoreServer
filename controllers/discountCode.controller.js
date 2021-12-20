@@ -1,3 +1,4 @@
+const moment = require("moment");
 const DiscountCode = require("../models/DiscountCode");
 
 const Response = require("../helpers/response.helper");
@@ -96,14 +97,14 @@ exports.create = async (req, res, next) => {
     if (discountCode) throw new Error(existCodeMessage);
 
     if (dateCreate) {
-      dateCreate = new Date(dateCreate);
+      dateCreate = new Date(moment(dateCreate, "DD/MM/YYYY"));
       if (dateExpire < Date.now())
         throw new Error("Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại");
     } else dateCreate = Date.now();
 
-    dateExpire = new Date(dateExpire);
-    if (dateExpire < dateCreate + 24 * 3600 * 1000)
-      throw new Error("Ngày hết hạn phải cách ngày bắt đầu ít nhất 1 ngày");
+    dateExpire = new Date(moment(dateExpire, "DD/MM/YYYY"));
+    if (dateExpire < dateCreate)
+      throw new Error("Ngày hết hạn không được nhỏ hơn ngày kết thúc");
 
     let obj = {
       codeName,
@@ -114,8 +115,8 @@ exports.create = async (req, res, next) => {
       dateCreate,
     };
 
-    if (!isNaN(sale)) obj = { ...obj, sale: parseInt(sale) };
-    if (!isNaN(amount)) obj = { ...obj, amount: parseFloat(amount) };
+    if (sale && !isNaN(sale)) obj = { ...obj, sale: parseInt(sale) };
+    if (amount && !isNaN(amount)) obj = { ...obj, amount: parseFloat(amount) };
 
     discountCode = await DiscountCode.create({ ...obj });
     discountCode._doc.id = discountCode._id;
