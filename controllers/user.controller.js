@@ -226,7 +226,10 @@ exports.updatePasswordConfirm = async (req, res, next) => {
     user._doc.id = user._id;
 
     await Token.findByIdAndDelete(currentToken._id);
-    return Response.success(res, { user, message: updateSuccessMessage });
+    // return Response.success(res, { user, message: updateSuccessMessage });
+    // Send email
+    const tokenUrl = `<p>Bạn đã đổi mật khẩu thành công, vui lòng bấm vào <a href="http://localhost:3000">đây</a> để quay lại trang chủ</p>`;
+    return res.send(tokenUrl);
   } catch (error) {
     return next(error);
   }
