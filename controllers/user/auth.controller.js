@@ -113,6 +113,7 @@ exports.register = async (req, res, next) => {
       //   parseInt(dateParts[1], 10) - 1,
       //   parseInt(dateParts[0], 10)
       // ),
+      dateCreate: new Date(),
     });
 
     return Response.success(res, { message: "Tạo tài khoản thành công" });
