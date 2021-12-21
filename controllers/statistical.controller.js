@@ -85,9 +85,9 @@ exports.getAll = async (req, res, next) => {
       {
         $group: {
           _id: {
-            year: { $year: "$dateModified" },
-            month: { $month: "$dateModified" },
-            day: { $dayOfMonth: "$dateModified" },
+            year: { $year: "$dateCreate" },
+            month: { $month: "$dateCreate" },
+            day: { $dayOfMonth: "$dateCreate" },
           },
           users: { $sum: 1 },
         },
