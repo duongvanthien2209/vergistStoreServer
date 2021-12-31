@@ -12,10 +12,8 @@ const sendEmail = async (options) => {
     secure: false,
     // service: "gmail",
     auth: {
-      // user: process.env.SMTP_USER,
-      // pass: process.env.SMTP_PASSWORD,
-      user: "duongthien2209@gmail.com",
-      pass: "thien3324",
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
     },
     tls: {
       // do not fail on invalid certs
@@ -25,7 +23,7 @@ const sendEmail = async (options) => {
 
   // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: "duongthien2209@gmail.com",
+    from: process.env.SMTP_USER,
     to: options.email,
     subject: options.subject,
     html: options.message,
