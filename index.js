@@ -23,9 +23,11 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 // Routes
-const apiRoute = require("./routes/api.route");
+// const apiRoute = require("./routes/api.route");
 
-app.use("/api", apiRoute);
+// app.use("/api", apiRoute);
+
+app.get("/", (req, res) => res.send("DONE"));
 
 // app.get(
 //   "/addCategories",
