@@ -9,8 +9,8 @@ const sendEmail = require("../utils/sendEmail");
 const User = require("../models/User");
 const Cart = require("../models/Cart");
 const CartDetail = require("../models/CartDetail");
-const Bill = require("../models/Bill");
-const BillDetail = require("../models/BillDetail");
+// const Bill = require("../models/Bill");
+// const BillDetail = require("../models/BillDetail");
 const Token = require("../models/Token");
 
 const uploadImage = require("../utils/uploadImage");
@@ -290,15 +290,15 @@ exports.delete = async (req, res, next) => {
     }
 
     // - Hóa đơn - Chi tiết hóa đơn
-    const bills = await Bill.find({ userId: user._id });
-    if (bills) {
-      for (let bill of bills) {
-        const billDetails = await BillDetail.find({ billId: bill._id });
-        for (let billDetail of billDetails)
-          await BillDetail.findByIdAndDelete(billDetail._id);
-        await Bill.findByIdAndDelete(bill._id);
-      }
-    }
+    // const bills = await Bill.find({ userId: user._id });
+    // if (bills) {
+    //   for (let bill of bills) {
+    //     const billDetails = await BillDetail.find({ billId: bill._id });
+    //     for (let billDetail of billDetails)
+    //       await BillDetail.findByIdAndDelete(billDetail._id);
+    //     await Bill.findByIdAndDelete(bill._id);
+    //   }
+    // }
 
     // - Bình Luận - Đánh giá
 
