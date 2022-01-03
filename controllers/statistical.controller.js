@@ -1,6 +1,6 @@
 const moment = require("moment");
 
-const Bill = require("../models/Bill");
+const Bill = require("../models/bill");
 const Product = require("../models/Product");
 
 const Response = require("../helpers/response.helper");

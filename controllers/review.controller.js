@@ -14,7 +14,7 @@ const {
 } = require("../constants");
 
 const Product = require("../models/Product");
-const Bill = require("../models/Bill");
+const Bill = require("../models/bill");
 const BillDetail = require("../models/BillDetail");
 
 // Kiểm tra người dùng có từng đặt sản phẩm chưa

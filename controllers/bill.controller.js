@@ -1,4 +1,4 @@
-const Bill = require("../models/Bill");
+const Bill = require("../models/bill");
 const User = require("../models/User");
 const Cart = require("../models/Cart");
 const CartDetail = require("../models/CartDetail");

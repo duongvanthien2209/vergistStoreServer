@@ -9,7 +9,7 @@ const sendEmail = require("../utils/sendEmail");
 const User = require("../models/User");
 const Cart = require("../models/Cart");
 const CartDetail = require("../models/CartDetail");
-const Bill = require("../models/Bill");
+const Bill = require("../models/bill");
 const BillDetail = require("../models/BillDetail");
 const Token = require("../models/Token");
 

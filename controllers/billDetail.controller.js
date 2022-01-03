@@ -11,7 +11,7 @@ const {
     failMessage,
   },
 } = require("../constants");
-const Bill = require("../models/Bill");
+const Bill = require("../models/bill");
 const Product = require("../models/Product");
 
 exports.update = async (req, res, next) => {
