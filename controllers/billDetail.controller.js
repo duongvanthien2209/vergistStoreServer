@@ -1,4 +1,4 @@
-const BillDetail = require("../models/BillDetail");
+const BillDetail = require("../models/billDetail");
 
 const Response = require("../helpers/response.helper");
 const constant = require("../constants/index");

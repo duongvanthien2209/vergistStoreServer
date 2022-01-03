@@ -10,7 +10,7 @@ const User = require("../models/User");
 const Cart = require("../models/Cart");
 const CartDetail = require("../models/CartDetail");
 const Bill = require("../models/bill");
-const BillDetail = require("../models/BillDetail");
+const BillDetail = require("../models/billDetail");
 const Token = require("../models/Token");
 
 const uploadImage = require("../utils/uploadImage");

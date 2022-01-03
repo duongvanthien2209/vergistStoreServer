@@ -24,8 +24,8 @@ app.use(cors());
 
 // Schemas
 // const Bill = require("./models/bill");
-// const User = require("./models/User");
-const BillDetail = require("./models/BillDetail");
+// const User = require("./models/User"); --
+const BillDetail = require("./models/billDetail");
 
 // Routes
 const apiRoute = require("./routes/api.route");

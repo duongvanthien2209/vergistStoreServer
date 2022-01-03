@@ -15,7 +15,7 @@ const {
 
 const Product = require("../models/Product");
 const Bill = require("../models/bill");
-const BillDetail = require("../models/BillDetail");
+const BillDetail = require("../models/billDetail");
 
 // Kiểm tra người dùng có từng đặt sản phẩm chưa
 const productIsContainInBill = async (userId, productId) => {

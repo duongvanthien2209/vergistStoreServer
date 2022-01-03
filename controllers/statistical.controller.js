@@ -5,7 +5,7 @@ const Product = require("../models/Product");
 
 const Response = require("../helpers/response.helper");
 const User = require("../models/User");
-const BillDetail = require("../models/BillDetail");
+const BillDetail = require("../models/billDetail");
 
 exports.getAll = async (req, res, next) => {
   try {
