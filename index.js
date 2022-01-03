@@ -22,12 +22,22 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.use(cors());
 
+// Schemas
+const Bill = require("./models/Bill");
+
 // Routes
 // const apiRoute = require("./routes/api.route");
 
 // app.use("/api", apiRoute);
 
-app.get("/", (req, res) => res.send("DONE"));
+app.get("/", async (req, res) => {
+  try {
+    const bills = await Bill.find();
+    return res.send(JSON.stringify(bills));
+  } catch (error) {
+    return console.log("ERR: ", error);
+  }
+});
 
 // app.get(
 //   "/addCategories",
