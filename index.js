@@ -24,12 +24,12 @@ app.use(cors());
 
 // Schemas
 const Bill = require("./models/bill");
-const User = require("./models/User");
+// const User = require("./models/User");
 
 // Routes
-// const apiRoute = require("./routes/api.route");
+const apiRoute = require("./routes/api.route");
 
-// app.use("/api", apiRoute);
+app.use("/api", apiRoute);
 
 app.get("/", async (req, res) => {
   try {
