@@ -23,8 +23,9 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 app.use(cors());
 
 // Schemas
-const Bill = require("./models/bill");
+// const Bill = require("./models/bill");
 // const User = require("./models/User");
+const BillDetail = require("./models/BillDetail");
 
 // Routes
 const apiRoute = require("./routes/api.route");
@@ -33,9 +34,10 @@ app.use("/api", apiRoute);
 
 app.get("/", async (req, res) => {
   try {
-    const bills = await Bill.find();
+    // const bills = await Bill.find();
     // const users = await User.find();
-    return res.send(JSON.stringify(bills));
+    const billDetails = await BillDetail.find();
+    return res.send(JSON.stringify(billDetails));
   } catch (error) {
     return console.log("ERR111: ", error);
   }
